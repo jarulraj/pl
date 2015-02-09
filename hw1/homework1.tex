@@ -19,6 +19,7 @@
 \usepackage{hyperref}
 \usepackage{framed}
 \usepackage{booktabs}
+\usepackage{fullpage}
 
 %% ==================================================================
 %% MACROS
@@ -542,10 +543,11 @@ also preserve denotational semantics.
 }
 
 We already showed in 1.6 that every expression $\E$ reduces to a reduced numeral.
-As transition relation is deterministic, we can only arrive at a single reduced
-numeral for a given expression $\E$. Thus, it is unique.
+As the transition relation is \textit{deterministic}, we can only arrive at a
+unique reduced numeral for a given expression $\E$.
 
-Another argument is that we already showed the denotational semantics.
+An alternate argument is that we already showed the \textit{denotational
+semantics}.
 As each of these semantic clauses define the meaning of a compound phrase from 
 the meanings of its parts, these transition rules uniquely determine the semantic
 function on all expression arguments. Thus, every expression $\E$ reduces to a 
@@ -555,22 +557,20 @@ unique reduced numeral along a unique transition path.
 \item[1.9] Show that in your operational semantics, $\E \oplus \negation(E)$ and 
 $\negation(E) \oplus E$ reduce to the numeral $\mathtt{0}$.
 }
-
-\begin{align}
+\begin{eqnarray*}
 \denot{E \oplus \negation(E)}
-	= \denot{E} + \denot{\negation(E)}
-	= \denot{E} - \denot{E}
-	= 0	
-	= \denot{0}
-\end{align}
-
-\begin{align}
-\denot{\negation(E) \oplus E}
-	= \denot{\negation(E)} + \denot{E}
-	= \denot{E} - \denot{E}
-	= 0	
-	= \denot{0}	
-\end{align}
+	& = & \denot{E} + \denot{\negation(E)} \qquad \text{(By definition)} \\
+	& = & \denot{E} - \denot{E} \\
+	& = & 0	\\
+	& = & \denot{\mathtt{0}} \qquad \text{(Assuming that this numeral denotes 0)}\\
+\end{eqnarray*}
+\begin{eqnarray*}
+\denot{\negation(E) \oplus E} 
+	& = & \denot{\negation(E)} + \denot{E}  \qquad \text{(By definition)} \\
+	& = & \denot{E} - \denot{E} \\
+	& = & 0	\\
+	& = & \denot{\mathtt{0}}	\qquad \text{(Assuming that this numeral denotes 0)}\\
+\end{eqnarray*}
 
 Thus, $\E \oplus \negation(E)$ and $\negation(E) \oplus E$ reduce to the 
 numeral $\mathtt{0}$.
