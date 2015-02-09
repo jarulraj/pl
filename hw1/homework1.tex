@@ -18,6 +18,7 @@
 \usepackage{proof}
 \usepackage{hyperref}
 \usepackage{framed}
+\usepackage{booktabs}
 
 %% ==================================================================
 %% MACROS
@@ -124,6 +125,14 @@
 \newcommand{\question}[1]
 {\color{DarkBlue}#1 \color{Black} \newline}
 
+\definecolor{comment-color}{rgb}{1,0,0}
+\renewcommand{\todo}[1]{
+\textnormal{\color{comment-color}{\textbf{TODO: #1}}}\unskip}
+
+%% ==================================================================
+%% DOCUMENT
+%% ==================================================================
+
 \begin{document}
 
 \title{\textbf{15-812 Semantics of Programming Languages \\ Spring 2015 \\
@@ -156,15 +165,16 @@ where $\digit$ ranges over the set $\Digit = \{\mathtt{+},\mathtt{0},\mathtt{-}\
 \E := \digit \; | \; \E \digit \; | \; \E_1 \oplus \E_2 \; | \; \E_1 \star \E_2 \; | \; \negation(\E)
 \end{align*}
 }
-
 \begin{enumerate}
 
 \question{
 \item[1.1] Define formally the notion of a reduced ternary numeral (either using abstract syntax or inference rules).
 }
 
-$$d := 0 | + | -$$
-$$R := d \, | \, Rd \, (R \neq 0)$$
+\begin{gather*}
+d := 0 \; | + \; | \; - \\
+R := d \; | \; Rd \; (R \neq 0)
+\end{gather*}
 
 \question{
 \item[1.2] Define an appropriate denotational semantics $\denot{\cdot}$ into the
@@ -172,19 +182,24 @@ set $\mathbb{Z}$ of integers, with $\oplus, \; \star, \; \negation$ representing
 the obvious arithmetic functions of addition, multiplication, and negation.
 }
 
-$\denot{\cdot}$ : Exp $\rightarrow$  $\mathbb{Z}$
-
-$\denot{0} = 0$\\
-$\denot{+} = +1$\\
-$\denot{-} = -1$\\
-
-$\denot{E0} = 3*\denot{E}$ \\
-$\denot{E+} = 3*\denot{E} + 1 $ \\
-$\denot{E-} = 3*\denot{E} - 1$ \\
-
-$\denot{E_{1} \oplus E_{2}} = \denot{E_{1}} \oplus \denot{E_{2}}$\\
-$\denot{E_{1} \star E_{2}} = \denot{E_{1}} \star \denot{E_{2}}$\\
-$\denot{neg(E)} = -\denot{E}$\\
+\begin{gather*}
+\denot{\cdot} : Exp \rightarrow \mathbb{Z}
+\end{gather*}
+\begin{gather*}
+\denot{0} = 0 \\
+\denot{+} = +1 \\
+\denot{-} = -1 \\
+\end{gather*}
+\begin{gather*}
+\denot{E0} = 3*\denot{E} \\
+\denot{E+} = 3*\denot{E} + 1 \\
+\denot{E-} = 3*\denot{E} - 1 \\
+\end{gather*}
+\begin{gather*}
+\denot{E_{1} \oplus E_{2}} = \denot{E_{1}} \oplus \denot{E_{2}} \\
+\denot{E_{1} \star E_{2}} = \denot{E_{1}} \star \denot{E_{2}} \\
+\denot{neg(E)} = -\denot{E} \\
+\end{gather*}
 
 \question{
 \item[1.3] Find a reduced numeral $\R$ for which $\denot{\R} = 42$ and
@@ -192,10 +207,9 @@ explain why it has the required property. Is such a reduced numeral unique? If
 so, why?
 }
 
-$\R$ = $+---0$. 
-Because, $81 - (27 + 9 + 3) = 42$.
+$$ \R = +---0 $$  Because, $$ 81 - (27 + 9 + 3) = 42$$
 
-Yes, it is unique. (TODO)
+\todo{Yes, it is unique.}
 
 \question{
 \item[1.4] Define a ternary sum operator $+_3 : \Digit \times \Digit \to \Digit \times \Digit$ 
@@ -203,17 +217,19 @@ such that if $d_1 +_3 d_2 = (d_3,d_4)$, then $\denot{\digit_1} + \denot{\digit_2
 \denot{\digit_3} + \denot{\digit_4}$ for any digits $\digit_1, \digit_2, \digit_3, \digit_4$.
 }
 
+\begin{table}[h!]
+    \centering
+	
+	$$ +_3 : \Digit \times \Digit \to \Digit \times \Digit$$ 
 
-$+_3 : \Digit \times \Digit \to \Digit \times \Digit$ 
-
-\begin{tabular}{l|lll}
-$+_3$ & - & 0 & + \\
-\hline
-- & (-, +) & (0, -) & (0, 0) \\
-0 & (0, -) & (0, 0) & (0, +) \\
-+ & (0, 0) & (0, +) & (+, -) \\
-\end{tabular}
-
+	\begin{tabular}{l | c c c}
+	$+_3$ & - & 0 & + \\
+	\hline
+	- & (-, +) & (0, -) & (0, 0) \\
+	0 & (0, -) & (0, 0) & (0, +) \\
+	+ & (0, 0) & (0, +) & (+, -) \\
+	\end{tabular}
+\end{table}
 
 \question{
 \item[1.5] Define an appropriate operational semantics for ternary expressions, 
@@ -224,18 +240,15 @@ with $\E \to \E'$ denoting the reduction relation.
 \infer[d \in \Digit]
   {0d \rightarrow d}
   {}   
-\]
-\[
+\qquad
 \infer[] 
   {neg(0) \rightarrow 0}  
   {}    
-\]
-\[
+\qquad
 \infer[] 
   {neg(+) \rightarrow -}  
   {}    
-\]
-\[
+\qquad
 \infer[] 
   {neg(-) \rightarrow +}  
   {}    
@@ -248,18 +261,22 @@ with $\E \to \E'$ denoting the reduction relation.
   {Ed \rightarrow E'd}
   {E \rightarrow E'}
 \]
+
 \[
 \infer[]
   {E_{1} \oplus E_{2} \rightarrow E_{1}' \oplus E_{2}}
-  {E_{1} \rightarrow E_{1}'} \qquad
+  {E_{1} \rightarrow E_{1}'} 
+\qquad
 \infer[]
   {R \oplus E_{2} \rightarrow R \oplus E_{2}'}
   {E_{2} \rightarrow E_{2}'}
 \]
+
 \[
 \infer[]
   {E_{1} \star E_{2} \rightarrow E_{1}' \star E_{2}}
-  {E_{1} \rightarrow E_{1}'} \qquad
+  {E_{1} \rightarrow E_{1}'} 
+\qquad
 \infer[d \in \Digit]
   {R \star E_{2} \rightarrow R \star E_{2}'}
   {E_{2} \rightarrow E_{2}'}
@@ -329,23 +346,29 @@ with $\E \to \E'$ denoting the reduction relation.
 only if it is a reduced numeral.
 }
 
-(A) If $\E$ is a reduced numeral, then it has no transitions.
+\begin{itemize}
 
-By the definition of reduced numeral, it has can be only of the form :
+	\item {\textbf{If $\E$ is a reduced numeral, then it has no transitions.}}
+	
+	By definition of reduced numeral, it has can be only of the form :
 
-$$d := 0 | + | -$$
-$$R := d \, | \, Rd \, (R \neq 0)$$
+	\begin{gather*}
+	d := 0 \; | + \; | \; - \\
+	R := d \; | \; Rd \; (R \neq 0)
+	\end{gather*}
+	
+	Thus, it has no leading zeroes and none of the preconditions for the
+	transition rules hold. So, it has no more transitions.
+	
+	\item {\textbf{If $\E$ has no transitions, then it is a reduced numeral.}}
+	
+	Assume that $\E$ is a reduced numeral and it has a valid transition.
+	Then it can either transition to a reduced numeral or to an expression 
+	that eventually transitions to a reduced numeral. By the definition of
+	the reduced numeral, $\E$ is not a reduced numeral. Hence, proved
+	by contradiction.
 
-Thus, it has no leading zeroes and none of the preconditions for the
-transition rules hold. So, it has no more transitions.
-
-(B) If $\E$ has no transitions, then it is a reduced numeral.
-
-Assume that $\E$ is a reduced numeral and it has a valid transition.
-Then it can either transition to a reduced numeral or to an expression 
-that eventually transitions to a reduced numeral. By the definition of
-the reduced numeral, $\E$ is not a reduced numeral. Hence, proved
-by contradiction.
+\end{itemize}
 
 \question{
 \item[1.7] Show that every transition $\E \to \E'$ preserves denotational semantics.
@@ -357,13 +380,13 @@ by contradiction.
   {E \rightarrow E'}
 \]
 
-Proof:
-\begin{align}
+\proof
+\begin{eqnarray*}
 \denot{Ed}  
-            =  3 * \denot{E} + d  
-            =  3 * \denot{E'} + d \, \text{(By ref. trans.)}  
-            = \denot{E'd} 
-\end{align}
+            & = &  3 * \denot{E} + d  \\
+            & = &  3 * \denot{E'} + d \qquad \text{(By ref. trans.)} \\ 
+            & = & \denot{E'd} 
+\end{eqnarray*}
 
 \[
 \infer[]
@@ -374,19 +397,23 @@ Proof:
   {E_{2} \rightarrow E_{2}'}
 \]
 
-Proof:
-\begin{align}
+\proof:
+\begin{eqnarray*}
 \denot{E_{1} \oplus E_{2}}  
-            =  \denot{E_{1}} \oplus \denot{E_{2}} 
-            =  \denot{E_{1}'} \oplus \denot{E_{2}}  \text{(By ref. trans.)}  
-            = \denot{E_{1}' \oplus E_{2}} 
-\end{align}
-\begin{align}
-\denot{R_{1} \oplus E_{2}}  
-            =  \denot{R_{1}} \oplus \denot{E_{2}} 
-            =  \denot{R_{1}} \oplus \denot{E_{2}'}  \text{(By ref. trans.)}  
-            = \denot{R_{1} \oplus E_{2}'} 
-\end{align}
+            & = &  \denot{E_{1}} \oplus \denot{E_{2}} \\
+            & = &  \denot{E_{1}'} \oplus \denot{E_{2}}  
+            \qquad \text{(By ref. trans.)}
+            \\ 
+            & = & \denot{E_{1}' \oplus E_{2}} 
+\end{eqnarray*}
+
+\begin{eqnarray*}
+\denot{R \oplus E_{2}}  
+            & = &  \denot{R} \oplus \denot{E_{2}} \\
+            & = &  \denot{R} \oplus \denot{E_{2}'}  
+            \qquad \text{(By ref. trans.)} \\
+            & = & \denot{{R} \oplus E_{2}'} 
+\end{eqnarray*}
 
 \[
 \infer[]
@@ -397,19 +424,22 @@ Proof:
   {E_{2} \rightarrow E_{2}'}
 \]
 
-Proof:
-\begin{align}
+\proof:
+
+\begin{eqnarray*}
 \denot{E_{1} \star E_{2}}  
-            =  \denot{E_{1}} \star \denot{E_{2}} 
-            =  \denot{E_{1}'} \star \denot{E_{2}}  \text{(By ref. trans.)}  
-            = \denot{E_{1}' \star E_{2}} 
-\end{align}
-\begin{align}
-\denot{R_{1} \star E_{2}}  
-            =  \denot{R_{1}} \star \denot{E_{2}} 
-            =  \denot{R_{1}} \star \denot{E_{2}'}  \text{(By ref. trans.)}  
-            = \denot{R_{1} \star E_{2}'} 
-\end{align}
+            & = &  \denot{E_{1}} \star \denot{E_{2}} \\
+            & = &  \denot{E_{1}'} \star \denot{E_{2}} \qquad \text{(By ref. trans.)}\\  
+            & = & \denot{E_{1}' \star E_{2}} 
+\end{eqnarray*}
+
+
+\begin{eqnarray*}
+\denot{R \star E_{2}}  
+            & = &  \denot{R} \star \denot{E_{2}} \\
+            & = &  \denot{R} \star \denot{E_{2}'} \qquad \text{(By ref. trans.)}\\  
+            & = & \denot{{R} \star E_{2}'} 
+\end{eqnarray*}
 
 \[
 \infer[]
@@ -417,13 +447,13 @@ Proof:
   {E \rightarrow E'}
 \]
 
-Proof:
-\begin{align}
+\proof:
+\begin{eqnarray*}
 \denot{neg(E)}  
-            =  -\denot{E} 
-            =  -\denot{E'}  \text{(By ref. trans.)}  
-            = \denot{neg(E')} 
-\end{align}
+            & = &  -\denot{E} \\
+            & = &  -\denot{E'}  \qquad \text{(By ref. trans.)} \\
+            & = & \denot{neg(E')} 
+\end{eqnarray*}
 
 \hrule
 
@@ -433,13 +463,13 @@ Proof:
   {}  
 \]
 
-Proof:
-\begin{align}
+\proof:
+\begin{eqnarray*}
 \denot{d_{1} \oplus d_{2}}  
-            = \denot{d_{1}} + \denot{d_{2}} 
-            = 3 * c + d              
-            = \denot{cd} 
-\end{align}
+            & = & \denot{d_{1}} + \denot{d_{2}} \\
+            & = & 3 * c + d  \\            
+            & = & \denot{cd} 
+\end{eqnarray*}
 
 \[
 \infer[(c, d) = d_{1} +_3 d_{2}] 
@@ -447,31 +477,31 @@ Proof:
   {}  
 \]
 
-Proof:
-\begin{align}
-\denot{d_{1} \oplus (R_{2} d_{2})}  
-            = \denot{d_{1}} + \denot{R_{2} d_{2}} 
-            = d_{1} + 3 * R_{2} + d_{2}
-            = 3 * R_{2} +  3 * c + d \\
-            = 3 * (c + R_{2}) + d
-            = \denot{(c \oplus R_{2}) d}       
-\end{align}
+\proof:
+\begin{eqnarray*}
+\denot{d_{1} \oplus (R_{2} d_{2})}  \\
+            & = & \denot{d_{1}} + \denot{R_{2} d_{2}} \\
+            & = & d_{1} + 3 * R_{2} + d_{2} \\
+            & = & 3 * R_{2} +  3 * c + d \\
+            & = & 3 * (c + R_{2}) + d \\
+            & = & \denot{(c \oplus R_{2}) d}       
+\end{eqnarray*}
 
 \[
 \infer[(c, d) = d_{1} +_3 d_{2}] 
-  {(R_{1} d_{1}) \oplus d_{2}  \rightarrow (R_{1} \oplus c) d}
+  {(R_{1} d_{1}) \oplus d_{2}  \rightarrow (R_{1} \oplus c) d} 
   {}  
 \]
 
-Proof:
-\begin{align}
-\denot{(R_{1} d_{1}) \oplus R_{2}}  
-            = \denot{R_{1} d_{1}} + \denot{d_{2}} 
-            = 3 * R_{1} + d_{1} + d_{2}
-            = 3 * R_{1} +  3 * c + d \\
-            = 3 * (R_{1} + c) + d
-            = \denot{(R_{1} \oplus c) d}       
-\end{align}
+\proof:
+\begin{eqnarray*}
+\denot{(R_{1} d_{1}) \oplus R_{2}}  \\
+            & = & \denot{R_{1} d_{1}} + \denot{d_{2}} \\
+            & = & 3 * R_{1} + d_{1} + d_{2} \\
+            & = & 3 * R_{1} +  3 * c + d \\
+            & = & 3 * (R_{1} + c) + d \\
+            & = & \denot{(R_{1} \oplus c) d}    
+\end{eqnarray*}
 
 \[
 \infer[(c, d) = d_{1} +_3 d_{2}] 
@@ -479,15 +509,15 @@ Proof:
   {}  
 \]
 
-Proof:
-\begin{align}
+\proof:
+\begin{eqnarray*}
 \denot{(R_{1} d_{1}) \oplus (R_{2} d_{2})}  
-            = \denot{R_{1} d_{1}} + \denot{R_{2} d_{2}} 
-            = 3 * R_{1} + d_{1} + 3 * R_{2} + d_{2} \\
-            = 3 * R_{1} +  3 * R_{2} + 3 * c + d 
-            = 3 * (R_{1} + R_{2} + c) + d
-            = \denot{(R_{1} \oplus R_{2}) \oplus c) d}       
-\end{align}
+            & = & \denot{R_{1} d_{1}} + \denot{R_{2} d_{2}} \\
+            & = & 3 * R_{1} + d_{1} + 3 * R_{2} + d_{2} \\
+            & = & 3 * R_{1} +  3 * R_{2} + 3 * c + d \\
+            & = & 3 * (R_{1} + R_{2} + c) + d \\
+            & = & \denot{(R_{1} \oplus R_{2}) \oplus c) d}       
+\end{eqnarray*}
 
 Using similar arguments, we can show that the transition rules involving $\star$
 also preserve denotational semantics.
@@ -498,14 +528,14 @@ also preserve denotational semantics.
   {E \rightarrow E'}    
 \]
 
-Proof:
-\begin{align}
+\proof:
+\begin{eqnarray*}
 \denot{neg(Ed)}  
-            = -\denot{Ed} 
-            = -(3 * \denot{E} + d) \\
-            = -(3 * \denot{E'} + d) 
-            = \denot{neg(E')d'}       
-\end{align}
+            & = & -\denot{Ed}  \\
+            & = & -(3 * \denot{E} + d) \\
+            & = & -(3 * \denot{E'} + d) \qquad \text{(By ref. trans.)}  \\
+            & = & \denot{neg(E')d'}     
+\end{eqnarray*}
 
 \question{
 \item[1.8] Show that every expression $\E$ reduces to a unique reduced numeral.
