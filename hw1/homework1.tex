@@ -614,17 +614,175 @@ ternary functions which is correct with respect to the above denotational semant
 The range of this semantic function is $\mathbb{Z}$, i.e.
 $$\denot{\cdot}_a : \textbf{Exp} \rightarrow \mathbb{Z}$$
 
-This is because for every integer i in $\mathbb{Z}$, there exists an expression
-$\E \in \textbf{Exp}$ such that $\denot{\E} = i$. 
+The range of this function is $\mathbb{Z}$. We prove this by induction.
 
-Induction.
+If depth is 0, by definition, $\denot{0} = 0$, $\denot{+} = +1$ and
+$\denot{-} = -1$. Thus, these 3 integers are in the range of the function.
+
+(a) Assume that integer $n$, where $n > +1$ is within the range of the function.
+We show that then $n+1$ also is in the range of the function. 
+
+Let $LST(n)$ denote the least significant trit and $OT(n)$ denote the
+higher order trits excluding the least significant trit of the integer $n$.
+
+If $LST(n) = -1$, then altering it to 0 gives as the higher integer. 
+If $LST(n) = 0$, then altering it to +1 gives as the higher integer. 
+If $LST(n) = +1$, then the next integer is of the form $(OT(n)-1)-1$.
+As $OT(n)$ must be less than $n$, it must hold the induction hypothesis.
+Thus, in all 3 possibilities, $n+1$ is also in the range of the function.
+
+(b) By a symmetric argument, if integer $n$, where $n < -1$, is 
+within the range of the function, we can show that $n-1$ also is in the range of
+the function.
+
+Thus, the range of this function is $\mathbb{Z}$ i.e. for every integer 
+$i \in \mathbb{Z}$, there exists an expression $\E \in \textbf{Exp}$ such that
+$\denot{\E} = i$.
+
+\vspace{0.3in}
+\textbf{Operational semantics :}
+\vspace{0.3in}
+
+\[
+\infer[d \in \Digit]
+  {0d \rightarrow d}
+  {}   
+\qquad
+\infer[] 
+  {neg(0) \rightarrow 0}  
+  {}    
+\qquad
+\infer[] 
+  {neg(+) \rightarrow -}  
+  {}    
+\qquad
+\infer[] 
+  {neg(-) \rightarrow +}  
+  {}    
+\]
+
+\hrule
+
+\[
+\infer[d \in \Digit]
+  {Ed \rightarrow E'd}
+  {E \rightarrow E'}
+\]
+
+\[
+\infer[]
+  {E_{1} \oplus E_{2} \rightarrow E_{1}' \oplus E_{2}}
+  {E_{1} \rightarrow E_{1}'} 
+\qquad
+\infer[]
+  {R \oplus E_{2} \rightarrow R \oplus E_{2}'}
+  {E_{2} \rightarrow E_{2}'}
+\]
+
+\[
+\infer[]
+  {E_{1} \star E_{2} \rightarrow E_{1}' \star E_{2}}
+  {E_{1} \rightarrow E_{1}'} 
+\qquad
+\infer[d \in \Digit]
+  {R \star E_{2} \rightarrow R \star E_{2}'}
+  {E_{2} \rightarrow E_{2}'}
+\]
+\[
+\infer[]
+  {neg(E) \rightarrow neg(E')}
+  {E \rightarrow E'}
+\]
+
+\hrule
+
+\[
+\infer[(c, d) = d_{1} +_{-3} d_{2}] 
+  {d_{1} \oplus d_{2} \rightarrow cd}
+  {}  
+\]
+\[
+\infer[(c, d) = d_{1} +_{-3} d_{2}] 
+  {d_{1} \oplus (R_{2} d_{2}) \rightarrow (c \oplus R_{2}) d}
+  {}  
+\]
+\[
+\infer[(c, d) = d_{1} +_{-3} d_{2}] 
+  {(R_{1} d_{1}) \oplus d_{2}  \rightarrow (R_{1} \oplus c) d}
+  {}  
+\]
+\[
+\infer[(c, d) = d_{1} +_{-3} d_{2}] 
+  {(R_{1} d_{1}) \oplus (R_{2} d_{2}) \rightarrow ((R_{1} + R_{2}) \oplus c) d}
+  {}  
+\]
+
+\hrule
+
+\[
+\infer[(c, d) = d_{1} \star_{-3} d_{2}] 
+  {d_{1} \star d_{2} \rightarrow cd}
+  {}  
+\]
+\[
+\infer[(c, d) = d_{1} \star_{-3} d_{2}] 
+  {d_{1} \star (R_{2} d_{2}) \rightarrow (c \oplus R_{2}) d}
+  {}  
+\]
+\[
+\infer[(c, d) = d_{1} \star_{-3} d_{2}] 
+  {(R_{1} d_{1}) \star d_{2}  \rightarrow (R_{1} \oplus c) d}
+  {}  
+\]
+\[
+\infer[(c, d) = d_{1} \star_{-3} d_{2}] 
+  {(R_{1} d_{1}) \star (R_{2} d_{2}) \rightarrow ((R_{1} + R_{2}) \star c) d}
+  {}  
+\]
+
+\hrule
+
+\[
+\infer[d' = neg(d)] 
+  {neg(Ed) \rightarrow neg(E')d'}  
+  {E \rightarrow E'}    
+\]
+
+
+Here, the operators are different compared to base-3 operators. For instance,
+
+\begin{table}[h!]
+    \centering
+	
+	$$ -_3 : \Digit \times \Digit \to \Digit \times \Digit$$ 
+
+	\begin{tabular}{l | c c c}
+	$-_3$ & - & 0 & + \\
+	\hline
+	- & (+, +) & (0, -) & (0, 0) \\
+	0 & (0, -) & (0, 0) & (0, +) \\
+	+ & (0, 0) & (0, +) & (-, -) \\
+	\end{tabular}
+\end{table}
+
+\vspace{0.5in}
 
 \question{
 \item[1.11] In the alternative operational semantics you gave in 1.10, is it still true that every expression reduces to a 
 unique reduced numeral? If so prove it, if not give a counterexample. 
 }
 
-Yes. Can do one to one mapping from base 3 to base -3.
+Yes, ths argument we made in 1.8 still holds. For every expression $\E$, $\E$
+has no transitions if it is a reduced numeral.
+Thus, this is the terminal state in the alternative operational semantics. 
+We observe that transition relation is deterministic. Thus, we can only arrive
+at a unique reduced numeral for a given expression E.
+
+An alternate argument is that we already shown the appropriate denotational semantics 
+from balanced ternary expression to integers. As each of these semantic clauses
+define the meaning of a compound phrase from the meanings of its parts, 
+these transition rules uniquely determine the semantic function on all
+expression arguments. Thus, every expression E reduces to a unique reduced numeral.
 
 \end{enumerate}
 
