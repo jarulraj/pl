@@ -812,6 +812,85 @@ ranges over a fixed set of variables.
 \item[2.1] When is $\C_1 ; \C_2$ the same as $\C_2 ; \C_1$ under the denotational semantics given in class?
 }
 
+We note that we use the partial function notation in this problem.\\
+
+We derive the agreement property i.e. $\C_1 ; \C_2 \equiv_{st} \C_2 ; \C_1$
+under the denotational semantics using structural induction on $\C$ based on the
+definition of the semantic function $\C : St \rightharpoonup St$.
+
+We first introduce these functions :
+
+$\textbf{free} : \textbf{Exp}_{int} \rightarrow 2^{ \textbf{Ide} }$ \\
+$\textbf{free} : \textbf{Exp}_{bool} \rightarrow 2^{ \textbf{Ide} }$ \\
+$\textbf{reads} : \textbf{Com} \rightarrow 2^{ \textbf{Ide} }$ \\
+$\textbf{writes} : \textbf{Com} \rightarrow 2^{ \textbf{Ide} }$. 
+
+The first two functions, informally, map an integer expression and boolean
+expression to the set of identifiers which occur free in that 
+expression respectively. Formally,
+
+\begin{align*}
+& free(\mathtt{n}) = \{\} \\
+& free(\mathtt{x}) = \{x\} \\
+& free(\E_{1} \oplus \E_{2}) = free(\E_{1}) \cup free(\E_{2}) \\
+& free(\E_{1} \star \E_{2}) = free(\E_{1}) \cup free(\E_{2}) \\
+& free(neg(\E)) = free(\E) \\
+& free(\ifsym \; \B \; \then \; \E_{1} \; \elsesym \; \E_{1}) = free(\B) \cup
+free(\E_{1}) \cup free(\E_{2})
+\end{align*}
+
+\begin{align*}
+& free(\true) = \{\} \\
+& free(\false) = \{\} \\
+& free(\B_{1} \; \andsym \; \B_{2}) = free(\B_{1}) \cup free(\B_{2}) \\
+& free(\B_{1} \; \orsym \; \B_{2}) = free(\B_{1}) \cup free(\B_{2}) \\
+& free(\notsym \; \B) = free(\B) \\
+& free(\E_{1} \leq \E_{2}) = free(\E_{1}) \cup free(\E_{2})
+\end{align*}
+
+The latter two functions, informally, map a command $\C \in \textbf{Com}$ to the
+set of free identifiers read and written by $\C$ respectively. Formally,
+
+\begin{align*}
+& reads(\skipsym) = \{\} \\
+& reads(\mathtt{x} := \E) = free(\E) \\
+& reads(\C_{1}; \C_{2}) = reads(\C_{1}) \cup reads(\C_{2}) \\
+& reads(\ifsym \; \B \; \then \; \C_{1} \; \elsesym \; \C_{2}) = free(\B) \cup
+reads(\C_{1}) \cup reads(\C_{2}) \\
+& reads(\whilesym \; \B \; \dosym \; \C) = free(\B) \cup reads(\C)
+\end{align*}
+
+\begin{align*}
+& writes(\skipsym) = \{\} \\
+& writes(\mathtt{x} := \E) = \{\mathtt{x}\} \\
+& writes(\C_{1}; \C_{2}) = writes(\C_{1}) \cup writes(\C_{2}) \\
+& writes(\ifsym \; \B \; \then \; \C_{1} \; \elsesym \; \C_{2}) = 
+writes(\C_{1}) \cup writes(\C_{2}) \\
+& writes(\whilesym \; \B \; \dosym \; \C) = writes(\C)
+\end{align*}  
+  
+Using these functions, we define a new function,  
+$\textbf{conflict} : \textbf{Com} \times \textbf{Com} : \textbf{Bit}$.
+
+It, informally, allows us to figure out if two commands conflict between their
+read and write sets. Formally,
+ 
+\begin{align*}
+\textbf{conflict}(C_{1}, C_{2}) =
+\{ \; \{ reads(C_{1}) \; \cap \; writes(C_{2} \} \; \cup \; \\
+\{ writes(C_{1}) \; \cap \; reads(C_{2}) \} \; \cup \; \\
+\{ writes(C_{1}) \; \cap \; writes(C_{2})\} \; \} \; \neq \; \phi)
+\end{align*}  
+  
+With respect to data flow, $\C_1 ; \C_2 \equiv_{st} \C_2 ; \C_1$
+if and only if $ \textbf{conflict}(C_{1}, C_{2}) = \false $
+
+But, we also need to ensure that both commands terminate. Otherwise, if 
+one of them is an infinite while loop, then the order of the commands
+matters. Formally, $|\C_1| \neq \{\} $ and  $|\C_2| \neq \{\} $.
+This ensures that they both have a terminal state.
+
+
 \question{
 \item[2.2] Express exponentiation of two natural numbers $\mathtt{x}$ and $\mathtt{y}$ as a program
 in this language and prove its correctness with respect to the denotational semantics given in class.
