@@ -29,6 +29,7 @@
 \newcommand{\B}{\mathtt{B}}
 \newcommand{\C}{\mathtt{C}}
 \newcommand{\R}{\mathtt{R}}
+\newcommand{\N}{\mathtt{N}}
 \newcommand{\LL}{\mathtt{L}}
 \newcommand{\true}{\mathtt{true}}
 \newcommand{\false}{\mathtt{false}}
@@ -894,7 +895,43 @@ This ensures that they both have a terminal state.
 \question{
 \item[2.2] Express exponentiation of two natural numbers $\mathtt{x}$ and $\mathtt{y}$ as a program
 in this language and prove its correctness with respect to the denotational semantics given in class.
+}
 
+We formulate the exponentiation program of two natural numbers $\mathtt{x}$ and
+$\mathtt{y}$ in terms of a repeated multiplication of $\mathtt{x}$ with itself
+for $\mathtt{y}$ times.
+
+Thus, the following program satisfies our requirements (the curly brackets are
+for clarity).
+
+$$ \mathtt{r} := \mathtt{1}; \; \whilesym \; \mathtt{y} > \mathtt{0} \; \dosym
+\; \{ \mathtt{r} := \mathtt{r} \star \mathtt{x} ; \; \mathtt{y} := \mathtt{y} -
+1 \} $$
+
+Here, the free identifier $\mathtt{r}$ computes the quantity of interest. Note
+that $\mathtt{x} \geq \mathtt{1} $ and $\mathtt{y} \geq \mathtt{1}$. We prove
+its correctness using induction on $\mathtt{y}$.
+
+If $\mathtt{y} = \mathtt{1}$, the boolean expression in the $\whilesym$ command
+is true exactly once thus the loop is executed exactly once. 
+Thus, $\mathtt{r} = \mathtt{x} = \mathtt{x}^{\mathtt{1}} $.
+
+Now, assume that the program is correct when $y = n$, where $n > 1$, i.e.
+$\mathtt{r} = \mathtt{x}^{\mathtt{n}}$. Note that the $\whilesym$ command must have been 
+triggered atleast twice in this case. 
+
+Now, when $y = n + 1$, the loop must iterate atleast one more time. This is
+because the boolean expression $\mathtt{y} > \mathtt{0}$ must
+be $\true$ exactly one more time than the case when  $y = n$. We attribute
+this to the fact that we decrement $\mathtt{y}$ by one in each iteration.
+Thus, in that extra iteration, the multiplication with $\mathtt{x}$ results in
+$\mathtt{r} = \mathtt{x}^{\mathtt{n}}  * \mathtt{x} =
+\mathtt{x}^{\mathtt{n+1}}$. 
+We also note that this program must terminate for all pairs of finite natural
+numbers $\mathtt{x}$ and $\mathtt{y}$. Thus, we proved the correctness of the 
+program by induction.
+
+\question{
 Consider a programming language $\mathcal{L}_e$ extended as follows:
 
 \begin{align*}
@@ -909,11 +946,44 @@ identifies the first pair $(\mathtt{n},\C_1)$ which occurs in the list $\LL$, an
 if no such pair exists, it performs $\C$.
 }
 
-
 \question{
 \item[2.3] Define an appropriate denotational semantics for this extended programming language. 
 You only need to specify the evaluation function on the new constructs.
 }
+
+The new construct is the case command and the list primitive.
+We extend the semantic function $\C : St \rightharpoonup St$ to handle this
+command.
+
+Before that, we introduce two helper functions for accessing list.
+
+$\textbf{exists} : \textbf{List} \times \mathbb{N} \rightarrow \textbf{Bit}$ \\
+$\textbf{get} : \textbf{List} \times \mathbb{N} \rightarrow \textbf{Com}$ \\ 
+
+Informally, the first command allows us to check if the list has a pair
+$(\mathtt{n},\C)$ given a number $n \in \mathbb{N}$. Formally,
+\begin{align*}
+& exists(\LL, \mathtt{n}) = \true  \; \; \ifsym \; \exists \; (\mathtt{n},\C)
+\in
+\LL
+\\
+& exists(\LL, \mathtt{n}) = \false \; , \; \text{otherwise} 
+\end{align*}  
+
+Informally, the later command allows us to get the relevant command $\C$ if the
+list has a pair $(\mathtt{n},\C)$ given a number $n \in \mathbb{N}$. Formally,
+\begin{align*}
+& get(\LL, \mathtt{n}) = \C  \; \; \ifsym \; \exists \; (\mathtt{n},\C) \in
+\LL
+\\
+& get(\LL, \mathtt{n}) = \skipsym \; , \; \text{otherwise} 
+\end{align*}  
+
+Now, we can extend the semantic function thus:
+
+$\; | \; \case \; \E \; \LL \; \C \; |\; = 
+\C \; \circ \; | exists(\LL, \mathtt{n})|_{\false} \cup \; 
+get(\LL, \mathtt{n}) \; \circ \; |exists(\LL, \mathtt{n})|_{\true} $
 
 \question{
 \item[2.4] Show that any program written in the extended programming language $\mathcal{L}_e$ 
