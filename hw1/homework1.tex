@@ -1,0 +1,543 @@
+
+\documentclass{article}
+
+\usepackage{amsmath}
+\usepackage{latexsym,amsthm,amssymb,amscd,url,enumerate}
+\usepackage[show]{ed}
+\usepackage[all]{xy}
+\usepackage{tikz}
+\usepackage{tikz-cd}
+\usepackage{leftidx}
+\usetikzlibrary{arrows}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{amsthm}
+\usepackage{stmaryrd}
+\usepackage{wasysym}
+\usepackage{proof}
+\usepackage{hyperref}
+\usepackage{framed}
+
+\begin{document}
+
+\newcommand{\E}{\mathtt{E}}
+\newcommand{\B}{\mathtt{B}}
+\newcommand{\C}{\mathtt{C}}
+\newcommand{\R}{\mathtt{R}}
+\newcommand{\LL}{\mathtt{L}}
+\newcommand{\true}{\mathtt{true}}
+\newcommand{\false}{\mathtt{false}}
+\newcommand{\andsym}{\mathtt{and}}
+\newcommand{\orsym}{\mathtt{or}}
+\newcommand{\notsym}{\mathop{\mathtt{not}}}
+\newcommand{\ifsym}{\mathtt{if}}
+\newcommand{\then}{\mathtt{then}}
+\newcommand{\elsesym}{\mathtt{else}}
+\newcommand{\whilesym}{\mathtt{while}}
+\newcommand{\dosym}{\mathtt{do}}
+\newcommand{\skipsym}{\mathtt{skip}}
+\newcommand{\nil}{\mathtt{nil}}
+\newcommand{\case}{\mathtt{case}}
+\newcommand{\digit}{\mathtt{d}}
+\newcommand{\negation}{\mathtt{neg}}
+\newcommand{\Digit}{\mathbf{Digit}}
+\newcommand{\denot}[1]{\mathtt{[[{#1}]]}}
+
+\newcommand{\G}{\Gamma}
+\newcommand{\D}{\Delta}
+
+\newcommand{\type}{\;\mathsf{type}}
+\newcommand{\val}{\;\mathsf{val}}
+\newcommand{\dom}[1]{\mathsf{dom}(#1)}
+\newcommand{\FV}{\mathsf{FV}}
+\newcommand{\reduces}{\mapsto}
+
+\newcommand{\ctx}[3]{(#1,#2\rhd #3)}
+\newcommand{\bool}{\mathbf{2}}
+\newcommand{\boolt}{\mathsf{tt}}
+\newcommand{\boolf}{\mathsf{ff}}
+\newcommand{\sem}[1]{\llbracket #1 \rrbracket}
+
+% Logical equivalence
+\newcommand{\rels}[3]{#1:#2\leftrightarrow #3}
+\newcommand{\relto}{\hookrightarrow}
+\newcommand{\LR}[2]{\sem{#1}_{#2}}
+
+\newcommand{\gd}[1]{\hat\gamma(\hat\delta(#1))}
+\newcommand{\gdp}[1]{\widehat{\gamma'}(\widehat{\delta'}(#1))}
+
+% Existential types
+\newcommand{\pack}[3]{\mathsf{pack}\,#1\,\mathsf{with}\,#2\,\mathsf{as}\,#3}
+\newcommand{\open}[4]{\mathsf{open}\,#1\,\mathsf{as}\,#2\,\mathsf{with}\,#3\,\mathsf{in}\,#4}
+
+% Data types
+\newcommand{\Nat}{\mathsf{nat}}
+\newcommand{\z}{\mathsf{z}}
+\newcommand{\suc}{\mathsf{suc}}
+\newcommand{\natrec}{\mathsf{natrec}}
+\newcommand{\pred}{\mathsf{pred}}
+\newcommand{\sub}{\mathsf{sub}}
+
+\newcommand{\List}{\mathsf{list}}
+\newcommand{\cons}{\mathsf{cons}}
+\newcommand{\foldr}{\mathsf{foldr}}
+
+\newcommand{\fst}{\mathsf{fst}}
+\newcommand{\snd}{\mathsf{snd}}
+
+\newcommand{\oList}{\overline{\mathsf{list}}}
+\newcommand{\onil}{\overline{\mathsf{nil}}}
+\newcommand{\ocons}{\overline{\mathsf{cons}}}
+\newcommand{\ohead}{\overline{\mathsf{head}}}
+\newcommand{\otail}{\overline{\mathsf{tail}}}
+\newcommand{\ofoldr}{\overline{\mathsf{foldr}}}
+
+% crazy hacks
+\makeatletter
+\def\lam#1{{\lambda}\@lamarg#1:\@endlamarg\@ifnextchar\bgroup{.\,\lam}{.\,}}
+\def\@lamarg#1:#2\@endlamarg{\if\relax\detokenize{#2}\relax #1\else\@lamvar{\@lameatcolon#2},#1\@endlamvar\fi}
+\def\@lamvar#1,#2\@endlamvar{#2\,{:}\,#1}
+\def\@lameatcolon#1:{#1}
+\let\lamt\lam
+\makeatother
+
+\newtheorem{theorem}{Theorem}						
+\newtheorem{definition}[theorem]{Definition}
+\newtheorem{proposition}[theorem]{Proposition}
+\newtheorem{lemma}[theorem]{Lemma}
+\newtheorem{axiom}{Axiom}
+\newtheorem{notation}[theorem]{Notation}
+\newtheorem{corollary}[theorem]{Corollary}
+
+\title{\textbf{15-812 Semantics of Programming Languages \\ Spring 2015 \\ {\large Assignment 1}}}
+\date{}
+\author{}
+
+\maketitle
+
+\section{Balanced ternary expressions}
+This homework problem concerns a non-standard arithmetical language based on balanced ternary notation (using digits with values -1, 0, 1). This notation was actually used in some early compilers,
+and has some technical advantages over conventional ternary (which uses digits with values 0, 1, 2). In particular, one can represent positive and negative integers with equal ease, symbolic arithmetic is straightforward, and negation corresponds to a very simple symbolic operation.
+
+Consider the following abstract syntax for balanced ternary expressions $\E$ where $\digit$ ranges over the set $\Digit = \{\mathtt{+},\mathtt{0},\mathtt{-}\}$:
+\begin{align*}
+\E := \digit \; | \; \E \digit \; | \; \E_1 \oplus \E_2 \; | \; \E_1 \star \E_2 \; | \; \negation(\E)
+\end{align*}
+
+\begin{enumerate}
+\item[1.1] Define formally the notion of a reduced ternary numeral (either using abstract syntax or inference rules).
+
+$$d := 0 | + | -$$
+$$R := d \, | \, Rd \, (R \neq 0)$$
+
+
+\item[1.2] Define an appropriate denotational semantics $\denot{\cdot}$ into the set $\mathbb{Z}$ of integers, with $\oplus, \; \star, \; \negation$ representing the obvious arithmetic functions of addition, multiplication, and negation.
+
+$\denot{\cdot}$ : Exp $\rightarrow$  $\mathbb{Z}$
+
+$\denot{0} = 0$\\
+$\denot{+} = +1$\\
+$\denot{-} = -1$\\
+
+$\denot{E0} = 3*\denot{E}$ \\
+$\denot{E+} = 3*\denot{E} + 1 $ \\
+$\denot{E-} = 3*\denot{E} - 1$ \\
+
+$\denot{E_{1} \oplus E_{2}} = \denot{E_{1}} \oplus \denot{E_{2}}$\\
+$\denot{E_{1} \star E_{2}} = \denot{E_{1}} \star \denot{E_{2}}$\\
+$\denot{neg(E)} = -\denot{E}$\\
+
+\item[1.3] Find a reduced numeral $\R$ for which $\denot{\R} = 42$ and explain why it has the required property. Is such a reduced numeral unique? If so, why?
+
+$\R$ = $+---0$. 
+Because, $81 - (27 + 9 + 3) = 42$.
+
+Yes, it is unique. (TODO)
+
+\item[1.4] Define a ternary sum operator $+_3 : \Digit \times \Digit \to \Digit \times \Digit$ such that if $d_1 +_3 d_2 = (d_3,d_4)$, then $\denot{\digit_1} + \denot{\digit_2} = 3
+\denot{\digit_3} + \denot{\digit_4}$ for any digits $\digit_1, \digit_2, \digit_3, \digit_4$.
+
+$+_3 : \Digit \times \Digit \to \Digit \times \Digit$ 
+
+\begin{tabular}{l|lll}
+$+_3$ & - & 0 & + \\
+\hline
+- & (-, +) & (0, -) & (0, 0) \\
+0 & (0, -) & (0, 0) & (0, +) \\
++ & (0, 0) & (0, +) & (+, -) \\
+\end{tabular}
+
+
+\item[1.5] Define an appropriate operational semantics for ternary expressions, with $\E \to \E'$ denoting the reduction relation.
+
+\[
+\infer[d \in \Digit]
+  {0d \rightarrow d}
+  {}   
+\]
+\[
+\infer[] 
+  {neg(0) \rightarrow 0}  
+  {}    
+\]
+\[
+\infer[] 
+  {neg(+) \rightarrow -}  
+  {}    
+\]
+\[
+\infer[] 
+  {neg(-) \rightarrow +}  
+  {}    
+\]
+
+\hrule
+
+\[
+\infer[d \in \Digit]
+  {Ed \rightarrow E'd}
+  {E \rightarrow E'}
+\]
+\[
+\infer[]
+  {E_{1} \oplus E_{2} \rightarrow E_{1}' \oplus E_{2}}
+  {E_{1} \rightarrow E_{1}'} \qquad
+\infer[]
+  {R \oplus E_{2} \rightarrow R \oplus E_{2}'}
+  {E_{2} \rightarrow E_{2}'}
+\]
+\[
+\infer[]
+  {E_{1} \star E_{2} \rightarrow E_{1}' \star E_{2}}
+  {E_{1} \rightarrow E_{1}'} \qquad
+\infer[d \in \Digit]
+  {R \star E_{2} \rightarrow R \star E_{2}'}
+  {E_{2} \rightarrow E_{2}'}
+\]
+\[
+\infer[]
+  {neg(E) \rightarrow neg(E')}
+  {E \rightarrow E'}
+\]
+
+\hrule
+
+\[
+\infer[(c, d) = d_{1} +_3 d_{2}] 
+  {d_{1} \oplus d_{2} \rightarrow cd}
+  {}  
+\]
+\[
+\infer[(c, d) = d_{1} +_3 d_{2}] 
+  {d_{1} \oplus (R_{2} d_{2}) \rightarrow (c \oplus R_{2}) d}
+  {}  
+\]
+\[
+\infer[(c, d) = d_{1} +_3 d_{2}] 
+  {(R_{1} d_{1}) \oplus d_{2}  \rightarrow (R_{1} \oplus c) d}
+  {}  
+\]
+\[
+\infer[(c, d) = d_{1} +_3 d_{2}] 
+  {(R_{1} d_{1}) \oplus (R_{2} d_{2}) \rightarrow ((R_{1} + R_{2}) \oplus c) d}
+  {}  
+\]
+
+\hrule
+
+\[
+\infer[(c, d) = d_{1} \star_{3} d_{2}] 
+  {d_{1} \star d_{2} \rightarrow cd}
+  {}  
+\]
+\[
+\infer[(c, d) = d_{1} \star_{3} d_{2}] 
+  {d_{1} \star (R_{2} d_{2}) \rightarrow (c \oplus R_{2}) d}
+  {}  
+\]
+\[
+\infer[(c, d) = d_{1} \star_{3} d_{2}] 
+  {(R_{1} d_{1}) \star d_{2}  \rightarrow (R_{1} \oplus c) d}
+  {}  
+\]
+\[
+\infer[(c, d) = d_{1} \star_{3} d_{2}] 
+  {(R_{1} d_{1}) \star (R_{2} d_{2}) \rightarrow ((R_{1} + R_{2}) \star c) d}
+  {}  
+\]
+
+\hrule
+
+\[
+\infer[d' = neg(d)] 
+  {neg(Ed) \rightarrow neg(E')d'}  
+  {E \rightarrow E'}    
+\]
+
+\item[1.6] Show that for every expression $\E$, $\E$ has no transitions if and only if it is a reduced numeral.
+
+(A) If $\E$ is a reduced numeral, then it has no transitions.
+
+By the definition of reduced numeral, it has can be only of the form :
+
+$$d := 0 | + | -$$
+$$R := d \, | \, Rd \, (R \neq 0)$$
+
+Thus, it has no leading zeroes and none of the preconditions for the
+transition rules hold. So, it has no more transitions.
+
+(B) If $\E$ has no transitions, then it is a reduced numeral.
+
+Assume that $\E$ is a reduced numeral and it has a valid transition.
+Then it can either transition to a reduced numeral or to an expression 
+that eventually transitions to a reduced numeral. By the definition of
+the reduced numeral, $\E$ is not a reduced numeral. Hence, proved
+by contradiction.
+
+\item[1.7] Show that every transition $\E \to \E'$ preserves denotational semantics.
+
+\[
+\infer[d \in \Digit]
+  {Ed \rightarrow E'd}
+  {E \rightarrow E'}
+\]
+
+Proof:
+\begin{align}
+\denot{Ed}  
+            =  3 * \denot{E} + d  
+            =  3 * \denot{E'} + d \, \text{(By ref. trans.)}  
+            = \denot{E'd} 
+\end{align}
+
+\[
+\infer[]
+  {E_{1} \oplus E_{2} \rightarrow E_{1}' \oplus E_{2}}
+  {E_{1} \rightarrow E_{1}'} \qquad
+\infer[]
+  {R \oplus E_{2} \rightarrow R \oplus E_{2}'}
+  {E_{2} \rightarrow E_{2}'}
+\]
+
+Proof:
+\begin{align}
+\denot{E_{1} \oplus E_{2}}  
+            =  \denot{E_{1}} \oplus \denot{E_{2}} 
+            =  \denot{E_{1}'} \oplus \denot{E_{2}}  \text{(By ref. trans.)}  
+            = \denot{E_{1}' \oplus E_{2}} 
+\end{align}
+\begin{align}
+\denot{R_{1} \oplus E_{2}}  
+            =  \denot{R_{1}} \oplus \denot{E_{2}} 
+            =  \denot{R_{1}} \oplus \denot{E_{2}'}  \text{(By ref. trans.)}  
+            = \denot{R_{1} \oplus E_{2}'} 
+\end{align}
+
+\[
+\infer[]
+  {E_{1} \star E_{2} \rightarrow E_{1}' \star E_{2}}
+  {E_{1} \rightarrow E_{1}'} \qquad
+\infer[d \in \Digit]
+  {R \star E_{2} \rightarrow R \star E_{2}'}
+  {E_{2} \rightarrow E_{2}'}
+\]
+
+Proof:
+\begin{align}
+\denot{E_{1} \star E_{2}}  
+            =  \denot{E_{1}} \star \denot{E_{2}} 
+            =  \denot{E_{1}'} \star \denot{E_{2}}  \text{(By ref. trans.)}  
+            = \denot{E_{1}' \star E_{2}} 
+\end{align}
+\begin{align}
+\denot{R_{1} \star E_{2}}  
+            =  \denot{R_{1}} \star \denot{E_{2}} 
+            =  \denot{R_{1}} \star \denot{E_{2}'}  \text{(By ref. trans.)}  
+            = \denot{R_{1} \star E_{2}'} 
+\end{align}
+
+\[
+\infer[]
+  {neg(E) \rightarrow neg(E')}
+  {E \rightarrow E'}
+\]
+
+Proof:
+\begin{align}
+\denot{neg(E)}  
+            =  -\denot{E} 
+            =  -\denot{E'}  \text{(By ref. trans.)}  
+            = \denot{neg(E')} 
+\end{align}
+
+\hrule
+
+\[
+\infer[(c, d) = d_{1} +_3 d_{2}] 
+  {d_{1} \oplus d_{2} \rightarrow cd}
+  {}  
+\]
+
+Proof:
+\begin{align}
+\denot{d_{1} \oplus d_{2}}  
+            = \denot{d_{1}} + \denot{d_{2}} 
+            = 3 * c + d              
+            = \denot{cd} 
+\end{align}
+
+\[
+\infer[(c, d) = d_{1} +_3 d_{2}] 
+  {d_{1} \oplus (R_{2} d_{2}) \rightarrow (c \oplus R_{2}) d}
+  {}  
+\]
+
+Proof:
+\begin{align}
+\denot{d_{1} \oplus (R_{2} d_{2})}  
+            = \denot{d_{1}} + \denot{R_{2} d_{2}} 
+            = d_{1} + 3 * R_{2} + d_{2}
+            = 3 * R_{2} +  3 * c + d \\
+            = 3 * (c + R_{2}) + d
+            = \denot{(c \oplus R_{2}) d}       
+\end{align}
+
+\[
+\infer[(c, d) = d_{1} +_3 d_{2}] 
+  {(R_{1} d_{1}) \oplus d_{2}  \rightarrow (R_{1} \oplus c) d}
+  {}  
+\]
+
+Proof:
+\begin{align}
+\denot{(R_{1} d_{1}) \oplus R_{2}}  
+            = \denot{R_{1} d_{1}} + \denot{d_{2}} 
+            = 3 * R_{1} + d_{1} + d_{2}
+            = 3 * R_{1} +  3 * c + d \\
+            = 3 * (R_{1} + c) + d
+            = \denot{(R_{1} \oplus c) d}       
+\end{align}
+
+\[
+\infer[(c, d) = d_{1} +_3 d_{2}] 
+  {(R_{1} d_{1}) \oplus (R_{2} d_{2}) \rightarrow ((R_{1} + R_{2}) \oplus c) d}
+  {}  
+\]
+
+Proof:
+\begin{align}
+\denot{(R_{1} d_{1}) \oplus (R_{2} d_{2})}  
+            = \denot{R_{1} d_{1}} + \denot{R_{2} d_{2}} 
+            = 3 * R_{1} + d_{1} + 3 * R_{2} + d_{2} \\
+            = 3 * R_{1} +  3 * R_{2} + 3 * c + d 
+            = 3 * (R_{1} + R_{2} + c) + d
+            = \denot{(R_{1} \oplus R_{2}) \oplus c) d}       
+\end{align}
+
+Using similar arguments, we can show that the transition rules involving $\star$
+also preserve denotational semantics.
+
+\[
+\infer[d' = neg(d)] 
+  {neg(Ed) \rightarrow neg(E')d'}  
+  {E \rightarrow E'}    
+\]
+
+Proof:
+\begin{align}
+\denot{neg(Ed)}  
+            = -\denot{Ed} 
+            = -(3 * \denot{E} + d) \\
+            = -(3 * \denot{E'} + d) 
+            = \denot{neg(E')d'}       
+\end{align}
+
+\item[1.8] Show that every expression $\E$ reduces to a unique reduced numeral.
+
+We already showed in 1.6 that every expression $\E$ reduces to a reduced numeral.
+As transition relation is deterministic, we can only arrive at a single reduced
+numeral for a given expression $\E$. Thus, it is unique.
+
+Another argument is that we already showed the denotational semantics.
+As each of these semantic clauses define the meaning of a compound phrase from 
+the meanings of its parts, these transition rules uniquely determine the semantic
+function on all expression arguments. Thus, every expression $\E$ reduces to a 
+unique reduced numeral along a unique transition path.
+
+
+\item[1.9] Show that in your operational semantics, $\E \oplus \negation(E)$ and 
+$\negation(E) \oplus E$ reduce to the numeral $\mathtt{0}$.
+
+\begin{align}
+\denot{E \oplus \negation(E)}
+	= \denot{E} + \denot{\negation(E)}
+	= \denot{E} - \denot{E}
+	= 0	
+	= \denot{0}
+\end{align}
+
+\begin{align}
+\denot{\negation(E) \oplus E}
+	= \denot{\negation(E)} + \denot{E}
+	= \denot{E} - \denot{E}
+	= 0	
+	= \denot{0}	
+\end{align}
+
+Thus, $\E \oplus \negation(E)$ and $\negation(E) \oplus E$ reduce to the 
+numeral $\mathtt{0}$.
+
+
+\item[1.10] Consider the following alternative denotational semantics $\denot{\cdot}_a$ for ternary expressions:
+\begin{align*}
+& \denot{\mathtt{0}}_a = 0 \\ & \denot{\mathtt{+}}_a = 1 \\ & \denot{\mathtt{-}}_a = -1 \\
+& \denot{\E \digit}_a = -3\denot{E}_a + \denot{\digit}_a \\
+& \denot{\E_1 \oplus \E_2}_a = \denot{\E_1}_a + \denot{\E_2}_a \\
+& \denot{\E_1 \star \E_2}_a = \denot{\E_1}_a * \denot{\E_2}_a \\
+& \denot{\negation(\E)}_a = -\denot{\E}_a
+\end{align*}
+What is the range of this semantic function? Why? Define an operational semantics for ternary functions which is correct with respect to the above denotational semantics.
+
+\item[1.11] In the alternative operational semantics you gave in 1.10, is it still true that every expression reduces to a unique reduced numeral? If so prove it, if not give a counterexample. 
+\end{enumerate}
+
+\section{Imperative programs}
+Recall the abstract syntax given in class for a very simple imperative programming language $\mathcal{L}$:
+\begin{align*}
+& \E := \mathtt{n} \; | \; \mathtt{x} \; | \; \E_1 \oplus \E_2 \; | \; \E_1 \star \E_2 \; | \; \negation(\E) \; | \; \ifsym \; \B \; \then \; \E_1 \; \elsesym \; \E_2 \\ 
+& \B := \true \; | \; \false \; | \; \B_1 \; \andsym \; \B_2 \; | \; \B_1 \; \orsym \; \B_2 \; | \; \notsym \; \B \; | \; \E_1 \leq \E_2 \\
+& \C := \skipsym \; | \; \mathtt{x} := \E \; | \; \C_1 ; \C_2 \; | \; \ifsym \; \B \; \then \; \C_1 \; \elsesym \; \C_2 \; | \; \whilesym \; \B \; \dosym \; \C
+\end{align*}
+where $\mathtt{n}$ ranges over the set $\mathbb{N}$ of natural numbers and $\mathtt{x}$ ranges over a fixed set of variables.
+
+\begin{enumerate}
+\item[2.1] When is $\C_1 ; \C_2$ the same as $\C_2 ; \C_1$ under the denotational semantics given in class?
+
+\item[2.2] Express exponentiation of two natural numbers $\mathtt{x}$ and $\mathtt{y}$ as a program in this language and prove its correctness with respect to the denotational semantics given in class.
+\end{enumerate}
+
+Consider a programming language $\mathcal{L}_e$ extended as follows:
+\begin{align*}
+& \E := \mathtt{n} \; | \; \mathtt{x} \; | \; \E_1 \oplus \E_2 \; | \; \E_1 \star \E_2 \; | \; \negation(\E) \; | \; \ifsym \; \B \; \then \; \E_1 \; \elsesym \; \E_2 \\ 
+& \B := \true \; | \; \false \; | \; \B_1 \; \andsym \; \B_2 \; | \; \B_1 \; \orsym \; \B_2 \; | \; \notsym \; \B \; | \; \E_1 \leq \E_2 \\
+& {\color{red} \LL := \nil \; | \; (\mathtt{n},\C)::\LL} \\
+& \C := \skipsym \; | \; \mathtt{x} := \E \; | \; \C_1 ; \C_2 \; | \; \ifsym \; \B \; \then \; \C_1 \; \elsesym \; \C_2 \; | \; \whilesym \; \B \; \dosym \; \C \; | \; {\color{red} \case \; \E \; \LL \; \C}
+\end{align*}
+The command $\case \; \E \; \LL \; \C$ evaluates $\E$ to obtain a natural number $\mathtt{n}$, identifies the first pair $(\mathtt{n},\C_1)$ which occurs in the list $\LL$, and performs $\C_1$; if no such pair exists, it performs $\C$.
+
+\begin{enumerate}
+\item[2.3] Define an appropriate denotational semantics for this extended programming language. You only need to specify the evaluation function on the new constructs.
+
+\item[2.4] Show that any program written in the extended programming language $\mathcal{L}_e$ can be written in $\mathcal{L}$, by constructing an appropriate translation function.
+
+\item[2.5] Show that the translation function you constructed in 2.3 preserves denotational semantics.
+
+\item[2.6] How do your answers for 2.4 and 2.5 change if we change the abstract syntax for $\LL$ to
+\[ \LL := \nil \; | \; ({\color{red} \E},\C)::\LL \]
+instead?
+\end{enumerate}
+
+
+\end{document}
+
+

@@ -1,0 +1,5 @@
+/tmp/
+*.pdf
+*.synctex.gz
+*.aux
+*.log
