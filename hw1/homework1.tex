@@ -172,9 +172,12 @@ where $\digit$ ranges over the set $\Digit = \{\mathtt{+},\mathtt{0},\mathtt{-}\
 \item[1.1] Define formally the notion of a reduced ternary numeral (either using abstract syntax or inference rules).
 }
 
+A ternary numeral without redundant leading zeros is defined as a reduced
+ternary numeral. Formally, 
+
 \begin{gather*}
-d := 0 \; | + \; | \; - \\
-R := d \; | \; Rd \; (R \neq 0)
+R := d \; | \; Rd \; (R \neq \mathtt{0}) \\
+d := + \; | \mathtt{0} \; | \; - 
 \end{gather*}
 
 \question{
@@ -183,9 +186,9 @@ set $\mathbb{Z}$ of integers, with $\oplus, \; \star, \; \negation$ representing
 the obvious arithmetic functions of addition, multiplication, and negation.
 }
 
-\begin{gather*}
-\denot{\cdot} : Exp \rightarrow \mathbb{Z}
-\end{gather*}
+Let \textbf{Exp} be the set of balanced ternary expressions. Then, we define
+$$\denot{\cdot} : \textbf{Exp} \rightarrow \mathbb{Z}$$ thus,
+
 \begin{gather*}
 \denot{0} = 0 \\
 \denot{+} = +1 \\
@@ -208,9 +211,25 @@ explain why it has the required property. Is such a reduced numeral unique? If
 so, why?
 }
 
-$$ \R = +---0 $$  Because, $$ 81 - (27 + 9 + 3) = 42$$
+$$ \R = +---0 $$  Because, $$\denot{\R} = (1) * 3^{4} - (1) * 3^{3} + (1) *
+3^{2} + (1) * 3^{1} = 42$$
 
-\todo{Yes, it is unique.}
+Yes, each reduced numeral $\R$ maps to an unique integer. We show this by
+induction on the depth of $\R$.
+
+\proof
+If depth is 0, by definition, $\denot{0} = 0$, $\denot{+} = +1$ and
+$\denot{-} = -1$. Thus, each numeral $\R$ maps to an unique integer i.e.
+for each of these 3 integers, there exists only one such numeral such that
+$\denot{\R}$ evaluates to that integer.
+
+Assuming that numerals of depth $k$ map to unique integers, we show
+that numeral of depth $k+1$ also map to unique integers.
+For a numeral's depth to decrease by 1, the only valid rule is
+to transition from $\R d$ to $\R$. Now, $\denot{\R d} = 3 * \denot{\R} + d$.
+As the set of integers that correspond to numerals of depth $k$ by the
+induction hypothesis, 
+each numeral $\R$ of depth $k+1$ also maps to an unique integer.
 
 \question{
 \item[1.4] Define a ternary sum operator $+_3 : \Digit \times \Digit \to \Digit \times \Digit$ 
@@ -352,22 +371,23 @@ only if it is a reduced numeral.
 	\item {\textbf{If $\E$ is a reduced numeral, then it has no transitions.}}
 	
 	By definition of reduced numeral, it has can be only of the form :
-
-	\begin{gather*}
-	d := 0 \; | + \; | \; - \\
-	R := d \; | \; Rd \; (R \neq 0)
-	\end{gather*}
 	
-	Thus, it has no leading zeroes and none of the preconditions for the
-	transition rules hold. So, it has no more transitions.
+\begin{gather*}
+R := d \; | \; Rd \; (R \neq \mathtt{0}) \\
+d := + \; | \mathtt{0} \; | \; - 
+\end{gather*}
+	
+	Note that it has no leading zeroes. We observe that none of the preconditions
+	for the transition rules defined in 1.5 hold. Thus, 
+	it has no possible transitions.
 	
 	\item {\textbf{If $\E$ has no transitions, then it is a reduced numeral.}}
 	
-	Assume that $\E$ is a reduced numeral and it has a valid transition.
+	Let's prove this by contradiction. Assume that $\E$ is a reduced numeral and it
+	has a valid transition.
 	Then it can either transition to a reduced numeral or to an expression 
-	that eventually transitions to a reduced numeral. By the definition of
-	the reduced numeral, $\E$ is not a reduced numeral. Hence, proved
-	by contradiction.
+	that is not a reduced numeral. By the definition of	the reduced numeral, 
+	$\E$ is not a reduced numeral. Hence, this is a contradiction.
 
 \end{itemize}
 
@@ -542,16 +562,17 @@ also preserve denotational semantics.
 \item[1.8] Show that every expression $\E$ reduces to a unique reduced numeral.
 }
 
-We already showed in 1.6 that every expression $\E$ reduces to a reduced numeral.
-As the transition relation is \textit{deterministic}, we can only arrive at a
-unique reduced numeral for a given expression $\E$.
+We showed in 1.6 that for every expression E, E has no transitions if it is a
+reduced numeral. Thus, this is the terminal state in the operational semantics.
+We observe that transition relation is \textit{deterministic}. Thus, we can
+only arrive at a unique reduced numeral for a given expression $\E$.
 
-An alternate argument is that we already showed the \textit{denotational
-semantics}.
-As each of these semantic clauses define the meaning of a compound phrase from 
-the meanings of its parts, these transition rules uniquely determine the semantic
-function on all expression arguments. Thus, every expression $\E$ reduces to a 
-unique reduced numeral along a unique transition path.
+An alternate argument is that we already shown the
+appropriate \textit{denotational semantics} from balanced ternary expression to
+integers. As each of these semantic clauses define the meaning of a compound
+phrase from the meanings of its parts, these transition rules uniquely 
+determine the semantic function on all expression arguments. 
+Thus, every expression $\E$ reduces to a unique reduced numeral.
 
 \question{
 \item[1.9] Show that in your operational semantics, $\E \oplus \negation(E)$ and 
@@ -590,10 +611,20 @@ What is the range of this semantic function? Why? Define an operational semantic
 ternary functions which is correct with respect to the above denotational semantics.
 }
 
+The range of this semantic function is $\mathbb{Z}$, i.e.
+$$\denot{\cdot}_a : \textbf{Exp} \rightarrow \mathbb{Z}$$
+
+This is because for every integer i in $\mathbb{Z}$, there exists an expression
+$\E \in \textbf{Exp}$ such that $\denot{\E} = i$. 
+
+Induction.
+
 \question{
 \item[1.11] In the alternative operational semantics you gave in 1.10, is it still true that every expression reduces to a 
 unique reduced numeral? If so prove it, if not give a counterexample. 
 }
+
+Yes. Can do one to one mapping from base 3 to base -3.
 
 \end{enumerate}
 
