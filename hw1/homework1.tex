@@ -1,7 +1,8 @@
 
-\documentclass{article}
+\documentclass[a4paper,10pt]{article}
 
 \usepackage{amsmath}
+\usepackage[usenames,dvipsnames]{xcolor}
 \usepackage{latexsym,amsthm,amssymb,amscd,url,enumerate}
 \usepackage[show]{ed}
 \usepackage[all]{xy}
@@ -18,7 +19,9 @@
 \usepackage{hyperref}
 \usepackage{framed}
 
-\begin{document}
+%% ==================================================================
+%% MACROS
+%% ==================================================================
 
 \newcommand{\E}{\mathtt{E}}
 \newcommand{\B}{\mathtt{B}}
@@ -109,29 +112,65 @@
 \newtheorem{notation}[theorem]{Notation}
 \newtheorem{corollary}[theorem]{Corollary}
 
-\title{\textbf{15-812 Semantics of Programming Languages \\ Spring 2015 \\ {\large Assignment 1}}}
+% disable hbox warnings
+\hfuzz=5.002pt 
+
+%% ==================================================================
+%% HELPERS
+%% ==================================================================
+
+\definecolor{DarkBlue}{rgb}{0.00,0.30,0.90}
+
+\newcommand{\question}[1]
+{\color{DarkBlue}#1 \color{Black} \newline}
+
+\begin{document}
+
+\title{\textbf{15-812 Semantics of Programming Languages \\ Spring 2015 \\
+{\large Assignment 1 Solutions}}\\\vspace{0.3in}
+{\Large \bf Joy Arulraj (AID : jarulraj)}}
+
 \date{}
 \author{}
 
 \maketitle
 
-\section{Balanced ternary expressions}
-This homework problem concerns a non-standard arithmetical language based on balanced ternary notation (using digits with values -1, 0, 1). This notation was actually used in some early compilers,
-and has some technical advantages over conventional ternary (which uses digits with values 0, 1, 2). In particular, one can represent positive and negative integers with equal ease, symbolic arithmetic is straightforward, and negation corresponds to a very simple symbolic operation.
+%% ==================================================================
+%% BALANCED TERNARY EXPRESSIONS
+%% ==================================================================
 
-Consider the following abstract syntax for balanced ternary expressions $\E$ where $\digit$ ranges over the set $\Digit = \{\mathtt{+},\mathtt{0},\mathtt{-}\}$:
+\section{Balanced ternary expressions}
+
+\question{
+This homework problem concerns a non-standard arithmetical language based on balanced 
+ternary notation (using digits with values -1, 0, 1). This notation was actually used in some early compilers,
+and has some technical advantages over conventional ternary (which uses 
+digits with values 0, 1, 2). In particular, one can represent positive and negative 
+integers with equal ease, symbolic arithmetic is straightforward, and negation 
+corresponds to a very simple symbolic operation.
+
+Consider the following abstract syntax for balanced ternary expressions $\E$ 
+where $\digit$ ranges over the set $\Digit = \{\mathtt{+},\mathtt{0},\mathtt{-}\}$:
+
 \begin{align*}
 \E := \digit \; | \; \E \digit \; | \; \E_1 \oplus \E_2 \; | \; \E_1 \star \E_2 \; | \; \negation(\E)
 \end{align*}
+}
 
 \begin{enumerate}
+
+\question{
 \item[1.1] Define formally the notion of a reduced ternary numeral (either using abstract syntax or inference rules).
+}
 
 $$d := 0 | + | -$$
 $$R := d \, | \, Rd \, (R \neq 0)$$
 
-
-\item[1.2] Define an appropriate denotational semantics $\denot{\cdot}$ into the set $\mathbb{Z}$ of integers, with $\oplus, \; \star, \; \negation$ representing the obvious arithmetic functions of addition, multiplication, and negation.
+\question{
+\item[1.2] Define an appropriate denotational semantics $\denot{\cdot}$ into the
+set $\mathbb{Z}$ of integers, with $\oplus, \; \star, \; \negation$ representing 
+the obvious arithmetic functions of addition, multiplication, and negation.
+}
 
 $\denot{\cdot}$ : Exp $\rightarrow$  $\mathbb{Z}$
 
@@ -147,15 +186,23 @@ $\denot{E_{1} \oplus E_{2}} = \denot{E_{1}} \oplus \denot{E_{2}}$\\
 $\denot{E_{1} \star E_{2}} = \denot{E_{1}} \star \denot{E_{2}}$\\
 $\denot{neg(E)} = -\denot{E}$\\
 
-\item[1.3] Find a reduced numeral $\R$ for which $\denot{\R} = 42$ and explain why it has the required property. Is such a reduced numeral unique? If so, why?
+\question{
+\item[1.3] Find a reduced numeral $\R$ for which $\denot{\R} = 42$ and
+explain why it has the required property. Is such a reduced numeral unique? If
+so, why?
+}
 
 $\R$ = $+---0$. 
 Because, $81 - (27 + 9 + 3) = 42$.
 
 Yes, it is unique. (TODO)
 
-\item[1.4] Define a ternary sum operator $+_3 : \Digit \times \Digit \to \Digit \times \Digit$ such that if $d_1 +_3 d_2 = (d_3,d_4)$, then $\denot{\digit_1} + \denot{\digit_2} = 3
+\question{
+\item[1.4] Define a ternary sum operator $+_3 : \Digit \times \Digit \to \Digit \times \Digit$ 
+such that if $d_1 +_3 d_2 = (d_3,d_4)$, then $\denot{\digit_1} + \denot{\digit_2} = 3
 \denot{\digit_3} + \denot{\digit_4}$ for any digits $\digit_1, \digit_2, \digit_3, \digit_4$.
+}
+
 
 $+_3 : \Digit \times \Digit \to \Digit \times \Digit$ 
 
@@ -168,7 +215,10 @@ $+_3$ & - & 0 & + \\
 \end{tabular}
 
 
-\item[1.5] Define an appropriate operational semantics for ternary expressions, with $\E \to \E'$ denoting the reduction relation.
+\question{
+\item[1.5] Define an appropriate operational semantics for ternary expressions, 
+with $\E \to \E'$ denoting the reduction relation.
+}
 
 \[
 \infer[d \in \Digit]
@@ -274,7 +324,10 @@ $+_3$ & - & 0 & + \\
   {E \rightarrow E'}    
 \]
 
-\item[1.6] Show that for every expression $\E$, $\E$ has no transitions if and only if it is a reduced numeral.
+\question{
+\item[1.6] Show that for every expression $\E$, $\E$ has no transitions if and 
+only if it is a reduced numeral.
+}
 
 (A) If $\E$ is a reduced numeral, then it has no transitions.
 
@@ -294,7 +347,9 @@ that eventually transitions to a reduced numeral. By the definition of
 the reduced numeral, $\E$ is not a reduced numeral. Hence, proved
 by contradiction.
 
+\question{
 \item[1.7] Show that every transition $\E \to \E'$ preserves denotational semantics.
+}
 
 \[
 \infer[d \in \Digit]
@@ -452,7 +507,9 @@ Proof:
             = \denot{neg(E')d'}       
 \end{align}
 
+\question{
 \item[1.8] Show that every expression $\E$ reduces to a unique reduced numeral.
+}
 
 We already showed in 1.6 that every expression $\E$ reduces to a reduced numeral.
 As transition relation is deterministic, we can only arrive at a single reduced
@@ -464,9 +521,10 @@ the meanings of its parts, these transition rules uniquely determine the semanti
 function on all expression arguments. Thus, every expression $\E$ reduces to a 
 unique reduced numeral along a unique transition path.
 
-
+\question{
 \item[1.9] Show that in your operational semantics, $\E \oplus \negation(E)$ and 
 $\negation(E) \oplus E$ reduce to the numeral $\mathtt{0}$.
+}
 
 \begin{align}
 \denot{E \oplus \negation(E)}
@@ -487,8 +545,9 @@ $\negation(E) \oplus E$ reduce to the numeral $\mathtt{0}$.
 Thus, $\E \oplus \negation(E)$ and $\negation(E) \oplus E$ reduce to the 
 numeral $\mathtt{0}$.
 
-
+\question{
 \item[1.10] Consider the following alternative denotational semantics $\denot{\cdot}_a$ for ternary expressions:
+
 \begin{align*}
 & \denot{\mathtt{0}}_a = 0 \\ & \denot{\mathtt{+}}_a = 1 \\ & \denot{\mathtt{-}}_a = -1 \\
 & \denot{\E \digit}_a = -3\denot{E}_a + \denot{\digit}_a \\
@@ -496,47 +555,84 @@ numeral $\mathtt{0}$.
 & \denot{\E_1 \star \E_2}_a = \denot{\E_1}_a * \denot{\E_2}_a \\
 & \denot{\negation(\E)}_a = -\denot{\E}_a
 \end{align*}
-What is the range of this semantic function? Why? Define an operational semantics for ternary functions which is correct with respect to the above denotational semantics.
 
-\item[1.11] In the alternative operational semantics you gave in 1.10, is it still true that every expression reduces to a unique reduced numeral? If so prove it, if not give a counterexample. 
+What is the range of this semantic function? Why? Define an operational semantics for 
+ternary functions which is correct with respect to the above denotational semantics.
+}
+
+\question{
+\item[1.11] In the alternative operational semantics you gave in 1.10, is it still true that every expression reduces to a 
+unique reduced numeral? If so prove it, if not give a counterexample. 
+}
+
 \end{enumerate}
 
+
+%% ==================================================================
+%% IMPERATIVE PROGRAMS
+%% ==================================================================
+
 \section{Imperative programs}
+
+\question{
 Recall the abstract syntax given in class for a very simple imperative programming language $\mathcal{L}$:
+
 \begin{align*}
 & \E := \mathtt{n} \; | \; \mathtt{x} \; | \; \E_1 \oplus \E_2 \; | \; \E_1 \star \E_2 \; | \; \negation(\E) \; | \; \ifsym \; \B \; \then \; \E_1 \; \elsesym \; \E_2 \\ 
 & \B := \true \; | \; \false \; | \; \B_1 \; \andsym \; \B_2 \; | \; \B_1 \; \orsym \; \B_2 \; | \; \notsym \; \B \; | \; \E_1 \leq \E_2 \\
 & \C := \skipsym \; | \; \mathtt{x} := \E \; | \; \C_1 ; \C_2 \; | \; \ifsym \; \B \; \then \; \C_1 \; \elsesym \; \C_2 \; | \; \whilesym \; \B \; \dosym \; \C
 \end{align*}
-where $\mathtt{n}$ ranges over the set $\mathbb{N}$ of natural numbers and $\mathtt{x}$ ranges over a fixed set of variables.
+
+where $\mathtt{n}$ ranges over the set $\mathbb{N}$ of natural numbers and $\mathtt{x}$ 
+ranges over a fixed set of variables.
+}
 
 \begin{enumerate}
-\item[2.1] When is $\C_1 ; \C_2$ the same as $\C_2 ; \C_1$ under the denotational semantics given in class?
 
-\item[2.2] Express exponentiation of two natural numbers $\mathtt{x}$ and $\mathtt{y}$ as a program in this language and prove its correctness with respect to the denotational semantics given in class.
-\end{enumerate}
+\question{
+\item[2.1] When is $\C_1 ; \C_2$ the same as $\C_2 ; \C_1$ under the denotational semantics given in class?
+}
+
+\question{
+\item[2.2] Express exponentiation of two natural numbers $\mathtt{x}$ and $\mathtt{y}$ as a program
+in this language and prove its correctness with respect to the denotational semantics given in class.
 
 Consider a programming language $\mathcal{L}_e$ extended as follows:
+
 \begin{align*}
-& \E := \mathtt{n} \; | \; \mathtt{x} \; | \; \E_1 \oplus \E_2 \; | \; \E_1 \star \E_2 \; | \; \negation(\E) \; | \; \ifsym \; \B \; \then \; \E_1 \; \elsesym \; \E_2 \\ 
+& \E := \mathtt{n} \; | \; \mathtt{x} \; | \; \E_1 \oplus \E_2 \; | \; \E_1 \star \E_2 \; | \; \negation(\E) \; | \; \ifsym \; \B \; \then \; \E_1 \; \elsesym \; \E_2 \\
 & \B := \true \; | \; \false \; | \; \B_1 \; \andsym \; \B_2 \; | \; \B_1 \; \orsym \; \B_2 \; | \; \notsym \; \B \; | \; \E_1 \leq \E_2 \\
 & {\color{red} \LL := \nil \; | \; (\mathtt{n},\C)::\LL} \\
 & \C := \skipsym \; | \; \mathtt{x} := \E \; | \; \C_1 ; \C_2 \; | \; \ifsym \; \B \; \then \; \C_1 \; \elsesym \; \C_2 \; | \; \whilesym \; \B \; \dosym \; \C \; | \; {\color{red} \case \; \E \; \LL \; \C}
 \end{align*}
-The command $\case \; \E \; \LL \; \C$ evaluates $\E$ to obtain a natural number $\mathtt{n}$, identifies the first pair $(\mathtt{n},\C_1)$ which occurs in the list $\LL$, and performs $\C_1$; if no such pair exists, it performs $\C$.
 
-\begin{enumerate}
-\item[2.3] Define an appropriate denotational semantics for this extended programming language. You only need to specify the evaluation function on the new constructs.
+The command $\case \; \E \; \LL \; \C$ evaluates $\E$ to obtain a natural number $\mathtt{n}$,
+identifies the first pair $(\mathtt{n},\C_1)$ which occurs in the list $\LL$, and performs $\C_1$;
+if no such pair exists, it performs $\C$.
+}
 
-\item[2.4] Show that any program written in the extended programming language $\mathcal{L}_e$ can be written in $\mathcal{L}$, by constructing an appropriate translation function.
 
+\question{
+\item[2.3] Define an appropriate denotational semantics for this extended programming language. 
+You only need to specify the evaluation function on the new constructs.
+}
+
+\question{
+\item[2.4] Show that any program written in the extended programming language $\mathcal{L}_e$ 
+can be written in $\mathcal{L}$, by constructing an appropriate translation function.
+}
+
+\question{
 \item[2.5] Show that the translation function you constructed in 2.3 preserves denotational semantics.
+}
 
+\question{
 \item[2.6] How do your answers for 2.4 and 2.5 change if we change the abstract syntax for $\LL$ to
 \[ \LL := \nil \; | \; ({\color{red} \E},\C)::\LL \]
 instead?
-\end{enumerate}
+}
 
+\end{enumerate}
 
 \end{document}
 
