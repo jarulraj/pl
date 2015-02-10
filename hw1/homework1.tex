@@ -972,6 +972,7 @@ $(\mathtt{n},\C)$ given a number $n \in \mathbb{N}$. Formally,
 
 Informally, the later command allows us to get the relevant command $\C$ if the
 list has a pair $(\mathtt{n},\C)$ given a number $n \in \mathbb{N}$. Formally,
+
 \begin{align*}
 & get(\LL, \mathtt{n}) = \C  \; \; \ifsym \; \exists \; (\mathtt{n},\C) \in
 \LL
@@ -982,13 +983,44 @@ list has a pair $(\mathtt{n},\C)$ given a number $n \in \mathbb{N}$. Formally,
 Now, we can extend the semantic function thus:
 
 $\; | \; \case \; \E \; \LL \; \C \; |\; = 
-\C \; \circ \; | exists(\LL, \mathtt{n})|_{\false} \cup \; 
-get(\LL, \mathtt{n}) \; \circ \; |exists(\LL, \mathtt{n})|_{\true} $
+\C \; \circ \; | exists(\LL, |\E|)|_{\false} \cup \; 
+get(\LL, \mathtt{n}) \; \circ \; |exists(\LL, |\E|)|_{\true} $
 
 \question{
 \item[2.4] Show that any program written in the extended programming language $\mathcal{L}_e$ 
 can be written in $\mathcal{L}$, by constructing an appropriate translation function.
 }
+
+We observe that the $\case$ command can be unrolled into multiple $\ifsym \; \B
+\; \then \; \C_1 \; \elsesym \; \C_2 \;$ statements, one for each number in the
+list $\LL$.
+
+Before we define the translation function, we introduce a helper function
+for accessing the first list element.
+
+$\textbf{head} : \textbf{List} \rightarrow \mathbb{N} \times \textbf{Com} $ \\
+
+Informally, it allows us to retrieve an element from the list. Formally,
+
+\begin{align*}
+& elem(\LL) = (\mathtt{n}, \C_) \; \; \ifsym \; \exists \; (\mathtt{n},\C)  \in
+\LL\\
+& elem(\LL) = (0, \skipsym) \; \text{otherwise} 
+\end{align*}  
+
+Now, we can define the translation function thus:
+\begin{align*}
+& \; | \; \case \; \E \; \LL \; \C \; |\; = 
+\ifsym \; elem(\LL) \neq (0, \skipsym)  \; 
+\then \; \C_1 \; \elsesym \; \C \; 
+| \; \case \; \E \; \LL' \; \C \; \\
+& \text{where} (\mathtt{n},\C_1) \in \; \LL  \; \ifsym \; elem(\LL) = (0,
+\skipsym) \\
+& \text{and} \; \; \LL' = \LL - elem(\LL)
+\end{align*} 
+
+This allows us to unroll the $\case$ command into multiple $\ifsym \; \B \;
+\then \; \C_1 \; \elsesym \; \C_2 \;$ statements.
 
 \question{
 \item[2.5] Show that the translation function you constructed in 2.3 preserves denotational semantics.
