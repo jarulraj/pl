@@ -912,9 +912,15 @@ Here, the free identifier $\mathtt{r}$ computes the quantity of interest. Note
 that $\mathtt{x} \geq \mathtt{1} $ and $\mathtt{y} \geq \mathtt{1}$. We prove
 its correctness using induction on $\mathtt{y}$.
 
+We note that the loop's semantics is basically,
+
+$$| y > 0 |_{\false} \circ (| \C | \circ | y > 0 |_{\true} )^{\star}$$
+
 If $\mathtt{y} = \mathtt{1}$, the boolean expression in the $\whilesym$ command
-is true exactly once thus the loop is executed exactly once. 
-Thus, $\mathtt{r} = \mathtt{x} = \mathtt{x}^{\mathtt{1}} $.
+is true exactly once thus the loop is executed exactly once.
+So, there is one state transition based on $\C$.
+Due to the properties of $\star$ and $-$, 
+$\mathtt{r} = \mathtt{x} = \mathtt{x}^{\mathtt{1}} $.
 
 Now, assume that the program is correct when $y = n$, where $n > 1$, i.e.
 $\mathtt{r} = \mathtt{x}^{\mathtt{n}}$. Note that the $\whilesym$ command must have been 
@@ -951,86 +957,84 @@ if no such pair exists, it performs $\C$.
 You only need to specify the evaluation function on the new constructs.
 }
 
-The new construct is the case command and the list primitive.
-We extend the semantic function $\C : St \rightharpoonup St$ to handle this
-command.
+The new construct is the $\case$ command and the list primitive. We extend the
+semantic function $\C : St \rightharpoonup St$ to handle this command.
 
-Before that, we introduce two helper functions for accessing list.
+We observe that $\LL : N \rightharpoonup \textbf{Com} $, because while executing
+the case command, we are only interested in the first (if any) pair  $(\mathtt{n},\C)$
+which occurs in the list $\LL$. If there are no such pairs, then the function is
+undefined. Otherwise, it maps to the command $\C$ in the list which is present
+in the first pair.
 
-$\textbf{exists} : \textbf{List} \times \mathbb{N} \rightarrow \textbf{Bit}$ \\
-$\textbf{get} : \textbf{List} \times \mathbb{N} \rightarrow \textbf{Com}$ \\ 
-
-Informally, the first command allows us to check if the list has a pair
-$(\mathtt{n},\C)$ given a number $n \in \mathbb{N}$. Formally,
-\begin{align*}
-& exists(\LL, \mathtt{n}) = \true  \; \; \ifsym \; \exists \; (\mathtt{n},\C)
-\in
-\LL
-\\
-& exists(\LL, \mathtt{n}) = \false \; , \; \text{otherwise} 
-\end{align*}  
-
-Informally, the later command allows us to get the relevant command $\C$ if the
-list has a pair $(\mathtt{n},\C)$ given a number $n \in \mathbb{N}$. Formally,
-
-\begin{align*}
-& get(\LL, \mathtt{n}) = \C  \; \; \ifsym \; \exists \; (\mathtt{n},\C) \in
-\LL
-\\
-& get(\LL, \mathtt{n}) = \skipsym \; , \; \text{otherwise} 
-\end{align*}  
-
-Now, we can extend the semantic function thus:
+Thus, we can extend the semantic function thus :
 
 $\; | \; \case \; \E \; \LL \; \C \; |\; = 
-\C \; \circ \; | exists(\LL, |\E|)|_{\false} \cup \; 
-get(\LL, \mathtt{n}) \; \circ \; |exists(\LL, |\E|)|_{\true} $
+\C \; \circ \; | |\E| \in dom(\LL) ) |_{\false} \cup \; 
+\LL(|\E|) \; \circ \; | |\E| \in dom(L) |_{\true} $
+
+Here, $|\E|$ is in the domain of the function $\LL$ iff $|\E|$ is in the
+list. Thus, this defines the denotational semantics of the $\case$ command.
+
 
 \question{
 \item[2.4] Show that any program written in the extended programming language $\mathcal{L}_e$ 
 can be written in $\mathcal{L}$, by constructing an appropriate translation function.
 }
 
-We observe that the $\case$ command can be unrolled into multiple $\ifsym \; \B
-\; \then \; \C_1 \; \elsesym \; \C_2 \;$ statements, one for each number in the
-list $\LL$.
-
-Before we define the translation function, we introduce a helper function
-for accessing the first list element.
-
-$\textbf{head} : \textbf{List} \rightarrow \mathbb{N} \times \textbf{Com} $ \\
-
-Informally, it allows us to retrieve an element from the list. Formally,
+We observe that the $\case$ command can be unrolled into $\ifsym \; \B
+\; \then \; \C_1 \; \elsesym \; \C_2 \;$ statements, one for each unique natural
+number in the list $\LL$.
+We can define the translation function thus:
 
 \begin{align*}
-& elem(\LL) = (\mathtt{n}, \C_) \; \; \ifsym \; \exists \; (\mathtt{n},\C)  \in
-\LL\\
-& elem(\LL) = (0, \skipsym) \; \text{otherwise} 
-\end{align*}  
-
-Now, we can define the translation function thus:
-\begin{align*}
-& \; | \; \case \; \E \; \LL \; \C \; |\; = 
-\ifsym \; elem(\LL) \neq (0, \skipsym)  \; 
-\then \; \C_1 \; \elsesym \; \C \; 
-| \; \case \; \E \; \LL' \; \C \; \\
-& \text{where} (\mathtt{n},\C_1) \in \; \LL  \; \ifsym \; elem(\LL) = (0,
-\skipsym) \\
-& \text{and} \; \; \LL' = \LL - elem(\LL)
+\; | \; \case \; \E \; \LL \; \C \; |\; = 
+\ifsym \; |\E| \in dom(\LL) \; 
+\then \; \LL(|\E|) \; \elsesym \; \C \; \\
 \end{align*} 
 
 This allows us to unroll the $\case$ command into multiple $\ifsym \; \B \;
-\then \; \C_1 \; \elsesym \; \C_2 \;$ statements.
+\then \; \C_1 \; \elsesym \; \C_2 \;$ statements, i.e.
+
+\begin{align*}
+& \; | \; \case \; \E \; \LL \; \C \; |\; = \\
+& \ifsym \; |\E| == \LL_{1} \; \then \; \C_{1} \\
+& \elsesym \; \ifsym \; |\E| == \LL_{2} \; \then \; \C_{2} \\
+& \ldots \\
+& \elsesym \; \ifsym \; |\E| == \LL_{k} \; \then \; \C_{k} \\
+& \elsesym \; \C \;
+\end{align*} 
+
+where, there are $k$ elements in the list $\LL_{k}$ and each element is of the
+form $(\LL_{k}, \C_{k})$.
 
 \question{
 \item[2.5] Show that the translation function you constructed in 2.3 preserves denotational semantics.
 }
+
+We observe that the translation function allows us to translate any program
+written in the extended programming language $\mathcal{L}_e$ to $\mathcal{L}$.
+
+As the constructs in $\mathcal{L}$ already follow denotational semantics, we
+argue that the translation function preserves denotational semantics.
 
 \question{
 \item[2.6] How do your answers for 2.4 and 2.5 change if we change the abstract syntax for $\LL$ to
 \[ \LL := \nil \; | \; ({\color{red} \E},\C)::\LL \]
 instead?
 }
+
+No, in this case, the only difference is that $\LL : Expr \rightharpoonup \textbf{Com} $.
+So, we evaluate the expressions in the list during comparison in the $\case$
+command, i.e.
+
+\begin{align*}
+& \; | \; \case \; \E \; \LL \; \C \; |\; = \\
+& \ifsym \; |\E| == |\LL_{1}| \; \then \; \C_{1} \\
+& \elsesym \; \ifsym \; |\E| == |\LL_{2}| \; \then \; \C_{2} \\
+& \ldots \\
+& \elsesym \; \ifsym \; |\E| == |\LL_{k}| \; \then \; \C_{k} \\
+& \elsesym \; \C \;
+\end{align*} 
 
 \end{enumerate}
 
