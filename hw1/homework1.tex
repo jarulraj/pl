@@ -215,8 +215,8 @@ so, why?
 $$ \R = +---0 $$  Because, $$\denot{\R} = (1) * 3^{4} - (1) * 3^{3} + (1) *
 3^{2} + (1) * 3^{1} = 42$$
 
-Yes, each reduced numeral $\R$ maps to an unique integer. We show this by
-induction on the depth of $\R$.
+\textbf{Yes}, each reduced numeral $\R$ maps to an unique integer. We show this
+by induction on the depth of $\R$.
 
 \proof
 If depth is 0, by definition, $\denot{0} = 0$, $\denot{+} = +1$ and
@@ -788,7 +788,7 @@ However, $\star_{-3}$ is the same as $\star_{3}$.
 unique reduced numeral? If so prove it, if not give a counterexample. 
 }
 
-Yes, the argument we made in 1.8 still holds. 
+\textbf{Yes}, the argument we made in 1.8 still holds. 
 
 \proof
 We showed in 1.6 that for every expression $\E$, $\E$ has no transitions if it
@@ -988,7 +988,7 @@ if no such pair exists, it performs $\C$.
 You only need to specify the evaluation function on the new constructs.
 }
 
-The new construct is the $\case$ command and the list primitive. We extend the
+The new construct is the $\case$ command. We extend the
 semantic function $\C : St \rightharpoonup St$ to handle this command.
 
 We observe that $\LL : N \rightharpoonup \textbf{Com} $, because while executing
@@ -997,15 +997,21 @@ which occurs in the list $\LL$. If there are no such pairs, then the function is
 undefined. Otherwise, it maps to the command $\C$ in the list which is present
 in the first pair.
 
-Thus, we can extend the semantic function thus :
+Thus, we can extend the semantic function in this manner :
 
 $\; | \; \case \; \E \; \LL \; \C \; |\; = 
 \C \; \circ \; | |\E| \in dom(\LL) ) |_{\false} \cup \; 
 \LL(|\E|) \; \circ \; | |\E| \in dom(L) |_{\true} $
 
 Here, $|\E|$ is in the domain of the function $\LL$ iff $|\E|$ is in the
-list. Thus, this defines the denotational semantics of the $\case$ command.
+list. This defines the denotational semantics of the $\case$ command.
 
+We note that the list primitive can be described thus :
+
+\begin{align*}
+\denot{(n, C) :: L} = \denot{L} \cup \{ (n,C) \} \\
+\denot{nil} = \phi 
+\end{align*}
 
 \question{
 \item[2.4] Show that any program written in the extended programming language $\mathcal{L}_e$ 
@@ -1014,29 +1020,33 @@ can be written in $\mathcal{L}$, by constructing an appropriate translation func
 
 We observe that the $\case$ command can be unrolled into $\ifsym \; \B
 \; \then \; \C_1 \; \elsesym \; \C_2 \;$ statements, one for each unique natural
-number in the list $\LL$.
-We can define the translation function thus:
-
-\begin{align*}
-\; | \; \case \; \E \; \LL \; \C \; |\; = 
-\ifsym \; |\E| \in dom(\LL) \; 
-\then \; \LL(|\E|) \; \elsesym \; \C \; \\
-\end{align*} 
-
-This allows us to unroll the $\case$ command into multiple $\ifsym \; \B \;
-\then \; \C_1 \; \elsesym \; \C_2 \;$ statements, i.e.
+number in the list $\LL$. 
+Formally, we can define the translation function thus:
 
 \begin{align*}
 & \; | \; \case \; \E \; \LL \; \C \; |\; = \\
-& \ifsym \; |\E| == \LL_{1} \; \then \; \C_{1} \\
-& \elsesym \; \ifsym \; |\E| == \LL_{2} \; \then \; \C_{2} \\
+& \; | \; \case \; \E \; \{ (\LL_{1}, \C_{1}) \; , (\LL_{2}, \C_{2}) \;, \ldots
+(\LL_{k}, \C_{k}) \} \; \C \; |\; = \\
+& \ifsym \; |\E| = \LL_{1} \; \then \; \C_{1} \\
+& \elsesym \; \ifsym \; |\E| = \LL_{2} \; \then \; \C_{2} \\
 & \ldots \\
-& \elsesym \; \ifsym \; |\E| == \LL_{k} \; \then \; \C_{k} \\
+& \elsesym \; \ifsym \; |\E| = \LL_{k} \; \then \; \C_{k} \\
 & \elsesym \; \C \;
 \end{align*} 
 
 where, there are $k$ elements in the list $\LL_{k}$ and each element is of the
-form $(\LL_{k}, \C_{k})$.
+form $(\LL_{k}, \C_{k})$. Note that this transformation is performed statically.
+Another recursive formulation for the translation function is :
+
+\begin{align*}
+& \; | \; \case \; \E \; \LL \; \C \; |\; = \\
+& \; | \; \case \; \E \; \{ (\LL_{1}, \C_{1}) \; , (\LL_{2}, \C_{2}) \;, \ldots
+(\LL_{k}, \C_{k}) \} \; \C \; |\; = \\
+& \ifsym \; |\E| = \LL_{k} \; \then \; \C_{k} \\
+& \elsesym \;
+| \; \case \; \E \; \{ (\LL_{1}, \C_{1}) \;, \ldots
+(\LL_{k-1}, \C_{k-1}) \} \; \C \; |\;
+\end{align*} 
 
 \question{
 \item[2.5] Show that the translation function you constructed in 2.3 preserves denotational semantics.
@@ -1044,9 +1054,38 @@ form $(\LL_{k}, \C_{k})$.
 
 We observe that the translation function allows us to translate any program
 written in the extended programming language $\mathcal{L}_e$ to $\mathcal{L}$.
-
 As the constructs in $\mathcal{L}$ already follow denotational semantics, we
-argue that the translation function preserves denotational semantics.
+use structural induction based on length of the list to argue that the
+translation function preserves denotational semantics.
+
+\proof
+When depth = $0$, i.e. $\LL = nil$, $| \; \case \; \E \; \LL \; \C \; |\; = \C
+$. This is because, there are no elements in the list. Thus, the 
+translation function preserves denotational semantics in this case, as it does
+for $\C$.
+
+When depth = $k$, i.e. $\LL = \; \{ (\LL_{1}, \C_{1}) \; , (\LL_{2}, \C_{2}) \;, \ldots
+(\LL_{k}, \C_{k}) \} \;$, assume that the translation function preserves the
+denotational semantics.
+
+Now, when depth = $k+1$, i.e. $\LL = \; \{ (\LL_{1}, \C_{1}) \; , (\LL_{2},
+\C_{2}) \;, \ldots (\LL_{k}, \C_{k}) \;, (\LL_{k+1}, \C_{k+1}) \} \;,$ 
+
+\begin{align*}
+& | \; \case \; \E \; \LL \; \C \; |\; = \\
+& \ifsym \; |\E| = \LL_{k+1} \; \then \; \C_{k+1} \\
+& \elsesym \; | \; \case \; \E \; \LL' \; \C \; |\; 
+\end{align*} 
+
+where, $\LL'$  is $ \{ (\LL_{1}, \C_{1}) \;, (\LL_{2}, \C_{2}) \;, \ldots
+(\LL_{k}, \C_{k}) \} \;$.
+For this part, the translation function preserves the denotational semantics
+by the induction hypothesis.
+We already have showed that it preseves the denotational semantics for
+an $\ifsym \; \B \; \then \; \C_1 \; \elsesym \; \C_2 \;$ statement.
+
+Thus, by structural induction, the translation function preserves denotational
+semantics.
 
 \question{
 \item[2.6] How do your answers for 2.4 and 2.5 change if we change the abstract syntax for $\LL$ to
@@ -1054,18 +1093,38 @@ argue that the translation function preserves denotational semantics.
 instead?
 }
 
-No, in this case, the only difference is that $\LL : Expr \rightharpoonup \textbf{Com} $.
-So, we evaluate the expressions in the list during comparison in the $\case$
-command, i.e.
+In this case, the difference is that $\LL : Expr \rightharpoonup \textbf{Com} $.
+So, we compare the semantics of each of the expressions in the list during
+comparison with the $\denot{\E}$ in the $\case$ command.
+A recursive formulation for the translation function is thus :
 
 \begin{align*}
 & \; | \; \case \; \E \; \LL \; \C \; |\; = \\
-& \ifsym \; |\E| == |\LL_{1}| \; \then \; \C_{1} \\
-& \elsesym \; \ifsym \; |\E| == |\LL_{2}| \; \then \; \C_{2} \\
-& \ldots \\
-& \elsesym \; \ifsym \; |\E| == |\LL_{k}| \; \then \; \C_{k} \\
-& \elsesym \; \C \;
+& \; | \; \case \; \E \; \{ (\E_{1}, \C_{1}) \; , (\E_{2}, \C_{2}) \;, \ldots
+(\E_{k}, \C_{k}) \} \; \C \; |\; = \\
+& \ifsym \; |\E| = |\E_{k}| \; \then \; \C_{k} \\
+& \elsesym \;
+| \; \case \; \E \; \{ (\E_{1}, \C_{1}) \;, \ldots
+(\E_{k-1}, \C_{k-1}) \} \; \C \; |\;
 \end{align*} 
+
+Thus, any program written in the extended programming language $L_{e}$ can be
+written in $L$, by constructing an appropriate translation function.
+
+We also show that the translation function preserves denotational semantics.
+Note that :
+
+\begin{align*}
+& | \; \case \; \E \; \LL \; \C \; |\; = \\
+& \ifsym \; |\E| = |\E_{k+1}| \; \then \; \C_{k+1} \\
+& \elsesym \; | \; \case \; \E \; \LL' \; \C \; |\; 
+\end{align*} 
+
+where, $\LL'$  is $ \{ (\E_{1}, \C_{1}) \;, (\E_{2}, \C_{2}) \;, \ldots
+(\E_{k}, \C_{k}) \} \;$.
+The translation function preserves the denotational semantics by an
+induction proof similar to that in 2.5. By structural induction, this
+translation function preserves denotational semantics.
 
 \end{enumerate}
 
