@@ -228,9 +228,10 @@ Assuming that numerals of depth $k$ map to unique integers, we show
 that numeral of depth $k+1$ also map to unique integers.
 For a numeral's depth to decrease by 1, the only valid rule is
 to transition from $\R d$ to $\R$. Now, $\denot{\R d} = 3 * \denot{\R} + d$.
-As the set of integers that correspond to numerals of depth $k$ by the
-induction hypothesis, 
+As the set of integers that correspond to numerals of depth $k$ are unique
+by the induction hypothesis, 
 each numeral $\R$ of depth $k+1$ also maps to an unique integer.
+
 
 \question{
 \item[1.4] Define a ternary sum operator $+_3 : \Digit \times \Digit \to \Digit \times \Digit$ 
@@ -371,24 +372,32 @@ only if it is a reduced numeral.
 
 	\item {\textbf{If $\E$ is a reduced numeral, then it has no transitions.}}
 	
-	By definition of reduced numeral, it has can be only of the form :
+	By the definition of reduced numeral, it can be only of the form :
 	
 \begin{gather*}
 R := d \; | \; Rd \; (R \neq \mathtt{0}) \\
 d := + \; | \mathtt{0} \; | \; - 
 \end{gather*}
 	
-	Note that it has no leading zeroes. We observe that none of the preconditions
-	for the transition rules defined in 1.5 hold. Thus, 
-	it has no possible transitions.
+	We observe that none of the preconditions for the transition rules defined in
+	1.5 hold. In particular, this transition rule :
+	
+	\[
+	\infer[d \in \Digit]
+  	{0d \rightarrow d}
+  	{}
+  	\] 
+  	
+  	does not get triggered, as it is already a reduced numeral and has
+  	no leading zeroes. Thus, it has no possible transitions.
 	
 	\item {\textbf{If $\E$ has no transitions, then it is a reduced numeral.}}
 	
 	Let's prove this by contradiction. Assume that $\E$ is a reduced numeral and it
 	has a valid transition.
 	Then it can either transition to a reduced numeral or to an expression 
-	that is not a reduced numeral. By the definition of	the reduced numeral, 
-	$\E$ is not a reduced numeral. Hence, this is a contradiction.
+	that is not a reduced numeral. By the definition of	the reduced numeral,
+	in both cases, $\E$ is not a reduced numeral. Hence, proved by contradiction.
 
 \end{itemize}
 
@@ -563,22 +572,25 @@ also preserve denotational semantics.
 \item[1.8] Show that every expression $\E$ reduces to a unique reduced numeral.
 }
 
-We showed in 1.6 that for every expression E, E has no transitions if it is a
-reduced numeral. Thus, this is the terminal state in the operational semantics.
-We observe that transition relation is \textit{deterministic}. Thus, we can
-only arrive at a unique reduced numeral for a given expression $\E$.
+\proof
+We showed in 1.6 that for every expression $\E$, $\E$ has no transitions if it
+is a reduced numeral. Further, we observe that transition relation is
+\textit{deterministic}. Thus, 
+we can only arrive at a unique reduced numeral for a given expression $\E$.
 
-An alternate argument is that we already shown the
-appropriate \textit{denotational semantics} from balanced ternary expression to
-integers. As each of these semantic clauses define the meaning of a compound
+\proof (alternate)
+We have already shown the appropriate \textit{denotational
+semantics} from balanced ternary expression to integers. 
+As each of these semantic clauses define the meaning of a compound
 phrase from the meanings of its parts, these transition rules uniquely 
-determine the semantic function on all expression arguments. 
-Thus, every expression $\E$ reduces to a unique reduced numeral.
+determine the semantic function on all expression arguments.
+Thus, every expression $\E$ reduces to a unique integer.
 
 \question{
 \item[1.9] Show that in your operational semantics, $\E \oplus \negation(E)$ and 
 $\negation(E) \oplus E$ reduce to the numeral $\mathtt{0}$.
 }
+
 \begin{eqnarray*}
 \denot{E \oplus \negation(E)}
 	& = & \denot{E} + \denot{\negation(E)} \qquad \text{(By definition)} \\
@@ -616,6 +628,7 @@ The range of this semantic function is $\mathbb{Z}$, i.e.
 $$\denot{\cdot}_a : \textbf{Exp} \rightarrow \mathbb{Z}$$
 
 The range of this function is $\mathbb{Z}$. We prove this by induction.
+We can show this by showing that reduced numerals cover $\mathbb{Z}$.
 
 If depth is 0, by definition, $\denot{0} = 0$, $\denot{+} = +1$ and
 $\denot{-} = -1$. Thus, these 3 integers are in the range of the function.
@@ -629,7 +642,7 @@ higher order trits excluding the least significant trit of the integer $n$.
 If $LST(n) = -1$, then altering it to 0 gives as the higher integer. 
 If $LST(n) = 0$, then altering it to +1 gives as the higher integer. 
 If $LST(n) = +1$, then the next integer is of the form $(OT(n)-1)-1$.
-As $OT(n)$ must be less than $n$, it must hold the induction hypothesis.
+As $OT(n)$ must be less than $n$, it must hold by the induction hypothesis.
 Thus, in all 3 possibilities, $n+1$ is also in the range of the function.
 
 (b) By a symmetric argument, if integer $n$, where $n < -1$, is 
@@ -640,9 +653,9 @@ Thus, the range of this function is $\mathbb{Z}$ i.e. for every integer
 $i \in \mathbb{Z}$, there exists an expression $\E \in \textbf{Exp}$ such that
 $\denot{\E} = i$.
 
-\vspace{0.3in}
+\vspace{0.2in}
 \textbf{Operational semantics :}
-\vspace{0.3in}
+\vspace{0.2in}
 
 \[
 \infer[d \in \Digit]
@@ -751,14 +764,16 @@ $\denot{\E} = i$.
 
 
 Here, the operators are different compared to base-3 operators. For instance,
+$+_{-3}$ is different from $+_{3}$.
+However, $\star_{-3}$ is the same as $\star_{3}$.
 
 \begin{table}[h!]
     \centering
 	
-	$$ -_3 : \Digit \times \Digit \to \Digit \times \Digit$$ 
+	$$ +_{-3} : \Digit \times \Digit \to \Digit \times \Digit$$ 
 
 	\begin{tabular}{l | c c c}
-	$-_3$ & - & 0 & + \\
+	$+_{-3}$ & - & 0 & + \\
 	\hline
 	- & (+, +) & (0, -) & (0, 0) \\
 	0 & (0, -) & (0, 0) & (0, +) \\
@@ -766,24 +781,29 @@ Here, the operators are different compared to base-3 operators. For instance,
 	\end{tabular}
 \end{table}
 
-\vspace{0.5in}
+\vspace{0.2in}
 
 \question{
 \item[1.11] In the alternative operational semantics you gave in 1.10, is it still true that every expression reduces to a 
 unique reduced numeral? If so prove it, if not give a counterexample. 
 }
 
-Yes, ths argument we made in 1.8 still holds. For every expression $\E$, $\E$
-has no transitions if it is a reduced numeral.
-Thus, this is the terminal state in the alternative operational semantics. 
-We observe that transition relation is deterministic. Thus, we can only arrive
-at a unique reduced numeral for a given expression E.
+Yes, the argument we made in 1.8 still holds. 
 
-An alternate argument is that we already shown the appropriate denotational semantics 
-from balanced ternary expression to integers. As each of these semantic clauses
-define the meaning of a compound phrase from the meanings of its parts, 
-these transition rules uniquely determine the semantic function on all
-expression arguments. Thus, every expression E reduces to a unique reduced numeral.
+\proof
+We showed in 1.6 that for every expression $\E$, $\E$ has no transitions if it
+is a reduced numeral. Further, we observe that transition relation is
+\textit{deterministic}. Thus, 
+we can only arrive at a unique reduced numeral for a given expression $\E$.
+
+\proof (alternate)
+We have already shown the appropriate \textit{denotational
+semantics} from balanced ternary expression to integers. 
+As each of these semantic clauses define the meaning of a compound
+phrase from the meanings of its parts, these transition rules uniquely 
+determine the semantic function on all expression arguments.
+Thus, every expression $\E$ reduces to a unique integer.
+
 
 \end{enumerate}
 
@@ -813,7 +833,8 @@ ranges over a fixed set of variables.
 \item[2.1] When is $\C_1 ; \C_2$ the same as $\C_2 ; \C_1$ under the denotational semantics given in class?
 }
 
-We note that we use the partial function notation in this problem.\\
+We note that we use the \textbf{partial function} notation from Stephen Brookes
+textbook in this problem.\\
 
 We derive the agreement property i.e. $\C_1 ; \C_2 \equiv_{st} \C_2 ; \C_1$
 under the denotational semantics using structural induction on $\C$ based on the
@@ -877,19 +898,20 @@ It, informally, allows us to figure out if two commands conflict between their
 read and write sets. Formally,
  
 \begin{align*}
-\textbf{conflict}(C_{1}, C_{2}) =
-\{ \; \{ reads(C_{1}) \; \cap \; writes(C_{2} \} \; \cup \; \\
-\{ writes(C_{1}) \; \cap \; reads(C_{2}) \} \; \cup \; \\
-\{ writes(C_{1}) \; \cap \; writes(C_{2})\} \; \} \; \neq \; \phi)
+& \textbf{conflict}(C_{1}, C_{2}) = \\
+& ( \{ \; \{ reads(C_{1}) \; \cap \; writes(C_{2} \} \; \cup \; \\
+& \{ writes(C_{1}) \; \cap \; reads(C_{2}) \} \; \cup \; \\
+& \{ writes(C_{1}) \; \cap \; writes(C_{2})\} \; \} \; \neq \; \phi)
 \end{align*}  
   
 With respect to data flow, $\C_1 ; \C_2 \equiv_{st} \C_2 ; \C_1$
-if and only if $ \textbf{conflict}(C_{1}, C_{2}) = \false $
+only if $ \textbf{conflict}(C_{1}, C_{2}) = \false $
 
-But, we also need to ensure that both commands terminate. Otherwise, if 
+We also need to ensure that both commands terminate. Otherwise, if 
 one of them is an infinite while loop, then the order of the commands
-matters. Formally, $|\C_1| \neq \{\} $ and  $|\C_2| \neq \{\} $.
-This ensures that they both have a terminal state.
+matters. Formally, they are the same if either $|\C_1| \neq \{\} $ or  
+$|\C_2| \neq \{\} $. 
+This ensures that the behavior in both orders is equivalent.
 
 
 \question{
@@ -900,7 +922,6 @@ in this language and prove its correctness with respect to the denotational sema
 We formulate the exponentiation program of two natural numbers $\mathtt{x}$ and
 $\mathtt{y}$ in terms of a repeated multiplication of $\mathtt{x}$ with itself
 for $\mathtt{y}$ times.
-
 Thus, the following program satisfies our requirements (the curly brackets are
 for clarity).
 
@@ -917,8 +938,8 @@ We note that the loop's semantics is basically,
 $$| y > 0 |_{\false} \circ (| \C | \circ | y > 0 |_{\true} )^{\star}$$
 
 If $\mathtt{y} = \mathtt{1}$, the boolean expression in the $\whilesym$ command
-is true exactly once thus the loop is executed exactly once.
-So, there is one state transition based on $\C$.
+is true exactly once. So, the loop is executed exactly once.
+and there is one state transition based on $\C$.
 Due to the properties of $\star$ and $-$, 
 $\mathtt{r} = \mathtt{x} = \mathtt{x}^{\mathtt{1}} $.
 
@@ -928,11 +949,21 @@ triggered atleast twice in this case.
 
 Now, when $y = n + 1$, the loop must iterate atleast one more time. This is
 because the boolean expression $\mathtt{y} > \mathtt{0}$ must
-be $\true$ exactly one more time than the case when  $y = n$. We attribute
-this to the fact that we decrement $\mathtt{y}$ by one in each iteration.
+be $\true$ exactly one more time than the case when  $y = n$. That is,
+the cardinality of
+$\{ \; ( \sigma, v > 0) \; |  \; (\sigma, v) \; \in \; | y | \}$
+must be one higher than the case where $y = n$.
+This is because we decrement $\mathtt{y}$ by $\mathtt{1}$ in each iteration.
 Thus, in that extra iteration, the multiplication with $\mathtt{x}$ results in
 $\mathtt{r} = \mathtt{x}^{\mathtt{n}}  * \mathtt{x} =
-\mathtt{x}^{\mathtt{n+1}}$. 
+\mathtt{x}^{\mathtt{n+1}}$. This is because,
+
+$$
+| r \times x | \; = \; \{ (\sigma, v_{1} \times v_{2}) | (\sigma, v_{1}) \in 
+| r | \; \cap \; v_{1} ̸\neq 0 \; \cap \; (\sigma, v_{2}) \in | x | \} 
+\; \cup \; \{ ( \sigma, 0) | ( \sigma, 0) \in | r | \} 
+$$
+
 We also note that this program must terminate for all pairs of finite natural
 numbers $\mathtt{x}$ and $\mathtt{y}$. Thus, we proved the correctness of the 
 program by induction.
