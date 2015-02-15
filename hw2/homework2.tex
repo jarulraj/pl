@@ -1,6 +1,7 @@
 
 \documentclass{article}
 
+\usepackage[usenames,dvipsnames]{xcolor}
 \usepackage{amsmath}
 \usepackage{latexsym,amsthm,amssymb,amscd,url,enumerate}
 \usepackage[show]{ed}
@@ -9,15 +10,34 @@
 \usepackage{tikz-cd}
 \usepackage{leftidx}
 \usetikzlibrary{arrows}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{amsthm}
+\usepackage{stmaryrd}
+\usepackage{wasysym}
+\usepackage{proof}
+\usepackage{hyperref}
+\usepackage{framed}
+\usepackage{fullpage}
 
-\begin{document}
+\newtheorem{theorem}{Theorem}						
+\newtheorem{definition}[theorem]{Definition}
+\newtheorem{proposition}[theorem]{Proposition}
+\newtheorem{lemma}[theorem]{Lemma}
+\newtheorem{axiom}{Axiom}
+\newtheorem{notation}[theorem]{Notation}
+\newtheorem{corollary}[theorem]{Corollary}
 
-\newcommand{\E}{\mathtt{e}}
-\newcommand{\B}{\mathtt{b}}
-\newcommand{\C}{\mathtt{c}}
+%% ==================================================================
+%% MACROS
+%% ==================================================================
+
+\newcommand{\E}{\mathtt{E}}
+\newcommand{\B}{\mathtt{B}}
+\newcommand{\C}{\mathtt{C}}
 \newcommand{\R}{\mathtt{R}}
+\newcommand{\N}{\mathtt{N}}
 \newcommand{\LL}{\mathtt{L}}
-\newcommand{\Sem}{\mathtt{S}}
 \newcommand{\true}{\mathtt{true}}
 \newcommand{\false}{\mathtt{false}}
 \newcommand{\andsym}{\mathtt{and}}
@@ -35,21 +55,98 @@
 \newcommand{\negation}{\mathtt{neg}}
 \newcommand{\Digit}{\mathbf{Digit}}
 \newcommand{\denot}[1]{\mathtt{[[{#1}]]}}
+\newcommand{\Sem}{\mathtt{S}}
 
-\newtheorem{theorem}{Theorem}						
-\newtheorem{definition}[theorem]{Definition}
-\newtheorem{proposition}[theorem]{Proposition}
-\newtheorem{lemma}[theorem]{Lemma}
-\newtheorem{axiom}{Axiom}
-\newtheorem{notation}[theorem]{Notation}
-\newtheorem{corollary}[theorem]{Corollary}
+\newcommand{\G}{\Gamma}
+\newcommand{\D}{\Delta}
 
-\title{\textbf{15-812 Semantics of Programming Languages \\ Spring 2015 \\ {\large Assignment 2}}}
+\newcommand{\type}{\;\mathsf{type}}
+\newcommand{\val}{\;\mathsf{val}}
+\newcommand{\dom}[1]{\mathsf{dom}(#1)}
+\newcommand{\FV}{\mathsf{FV}}
+\newcommand{\reduces}{\mapsto}
+
+\newcommand{\ctx}[3]{(#1,#2\rhd #3)}
+\newcommand{\bool}{\mathbf{2}}
+\newcommand{\boolt}{\mathsf{tt}}
+\newcommand{\boolf}{\mathsf{ff}}
+\newcommand{\sem}[1]{\llbracket #1 \rrbracket}
+
+% Logical equivalence
+\newcommand{\rels}[3]{#1:#2\leftrightarrow #3}
+\newcommand{\relto}{\hookrightarrow}
+\newcommand{\LR}[2]{\sem{#1}_{#2}}
+
+\newcommand{\gd}[1]{\hat\gamma(\hat\delta(#1))}
+\newcommand{\gdp}[1]{\widehat{\gamma'}(\widehat{\delta'}(#1))}
+
+% Existential types
+\newcommand{\pack}[3]{\mathsf{pack}\,#1\,\mathsf{with}\,#2\,\mathsf{as}\,#3}
+\newcommand{\open}[4]{\mathsf{open}\,#1\,\mathsf{as}\,#2\,\mathsf{with}\,#3\,\mathsf{in}\,#4}
+
+% Data types
+\newcommand{\Nat}{\mathsf{nat}}
+\newcommand{\z}{\mathsf{z}}
+\newcommand{\suc}{\mathsf{suc}}
+\newcommand{\natrec}{\mathsf{natrec}}
+\newcommand{\pred}{\mathsf{pred}}
+\newcommand{\sub}{\mathsf{sub}}
+
+\newcommand{\List}{\mathsf{list}}
+\newcommand{\cons}{\mathsf{cons}}
+\newcommand{\foldr}{\mathsf{foldr}}
+
+\newcommand{\fst}{\mathsf{fst}}
+\newcommand{\snd}{\mathsf{snd}}
+
+\newcommand{\oList}{\overline{\mathsf{list}}}
+\newcommand{\onil}{\overline{\mathsf{nil}}}
+\newcommand{\ocons}{\overline{\mathsf{cons}}}
+\newcommand{\ohead}{\overline{\mathsf{head}}}
+\newcommand{\otail}{\overline{\mathsf{tail}}}
+\newcommand{\ofoldr}{\overline{\mathsf{foldr}}}
+
+% crazy hacks
+\makeatletter
+\def\lam#1{{\lambda}\@lamarg#1:\@endlamarg\@ifnextchar\bgroup{.\,\lam}{.\,}}
+\def\@lamarg#1:#2\@endlamarg{\if\relax\detokenize{#2}\relax #1\else\@lamvar{\@lameatcolon#2},#1\@endlamvar\fi}
+\def\@lamvar#1,#2\@endlamvar{#2\,{:}\,#1}
+\def\@lameatcolon#1:{#1}
+\let\lamt\lam
+\makeatother
+
+% disable hbox warnings
+\hfuzz=5.002pt 
+
+%% ==================================================================
+%% HELPERS
+%% ==================================================================
+
+\definecolor{DarkBlue}{rgb}{0.00,0.30,0.90}
+
+\newcommand{\question}[1]
+{\color{DarkBlue}#1 \color{Black}}
+
+\definecolor{comment-color}{rgb}{1,0,0}
+\renewcommand{\todo}[1]{
+\textnormal{\color{comment-color}{\textbf{TODO: #1}}}\unskip}
+
+%% ==================================================================
+%% DOCUMENT
+%% ==================================================================
+
+\begin{document}
+
+\title{\textbf{15-812 Semantics of Programming Languages \\ Spring 2015 \\
+{\large Assignment 2 Solutions}}\\\vspace{0.3in}
+{\Large \bf Joy Arulraj (AID : jarulraj)}}
+
 \date{}
 \author{}
 
 \maketitle
 
+\question{
 \noindent In this assignment we will revisit the imperative language $\mathcal{L}$ defined by the syntax
 \begin{align*}
 & \E := \mathtt{n} \; | \; \mathtt{x} \; | \; \E_1 + \E_2 \; | \; \E_1 \cdot \E_2 \; | \; \negation(\E) \; | \; \ifsym \; \B \; \then \; \E_1 \; \elsesym \; \E_2 \\ 
@@ -69,61 +166,108 @@ For two semantics $\Sem_1, \Sem_2$ we say that
 	A semantics $\Sem$ is \emph{compositional} if it is compositional with respect to itself.\bigskip
 
 \noindent \textbf{Please justify all answers.}
+}
+
+%% ==================================================================
+%% REVISITING SEMANTICS
+%% ==================================================================
 
 \section{Revisiting semantics}
+
 \begin{enumerate}
+\question{
 \item[1.1] 
 \begin{enumerate}
-	\item[a)] Is the input/output semantics $\mathcal{I}$ compositional? Is it fully abstract with respect to the termination semantics $\mathcal{T}$?
-  \item[b)] Is the termination semantics $\mathcal{T}$ compositional? Is it fully abstract with respect to the input/output semantics $\mathcal{I}$?
+	\item[a)] Is the input/output semantics $\mathcal{I}$ compositional? Is it
+	fully abstract with respect to the termination semantics $\mathcal{T}$?
+	\item[b)] Is the termination semantics $\mathcal{T}$ compositional? Is it
+	fully abstract with respect to the input/output semantics $\mathcal{I}$?
 \end{enumerate}
+}
+
+\question{	
 \item[1.2]
 \begin{enumerate}
-	\item[a)] Give a semantics $\Sem$ such that the state transition semantics $[[\cdot]]$ is not compositional with respect to $\Sem$.
-	\item[b)] Give a semantics $\Sem$ such that the state transition semantics $[[\cdot]]$ is not fully abstract with respect to $\Sem$.
-	\end{enumerate}
+	\item[a)] Give a semantics $\Sem$ such that the state transition semantics 
+	$[[\cdot]]$ is not compositional with respect to $\Sem$.
+	\item[b)] Give a semantics $\Sem$ such that the state transition semantics 
+	$[[\cdot]]$ is not fully abstract with respect to $\Sem$.
+\end{enumerate}
+}
 
-\item[1.3] In the previous homework assignment, question 2, you defined a denotational semantics $\Sem$ for the extended imperative language $\mathcal{L}_e$:
+
+\question{
+\item[1.3] In the previous homework assignment, question 2, you defined a denotational 
+semantics $\Sem$ for the extended imperative language $\mathcal{L}_e$:
+
 \begin{align*}
 & \E := \mathtt{n} \; | \; \mathtt{x} \; | \; \E_1 + \E_2 \; | \; \E_1 \cdot \E_2 \; | \; \negation(\E) \; | \; \ifsym \; \B \; \then \; \E_1 \; \elsesym \; \E_2 \\ 
 & \B := \true \; | \; \false \; | \; \B_1 \; \andsym \; \B_2 \; | \; \B_1 \; \orsym \; \B_2 \; | \; \notsym \; \B \; | \; \E_1 \leq \E_2 \\
 & {\color{red} \LL := \nil \; | \; (\mathtt{n},\C)::\LL} \\
 & \C := \skipsym \; | \; \mathtt{x} := \E \; | \; \C_1 ; \C_2 \; | \; \ifsym \; \B \; \then \; \C_1 \; \elsesym \; \C_2 \; | \; \whilesym \; \B \; \dosym \; \C \; | \; {\color{red} \case \; \E \; \LL \; \C}
 \end{align*}
-Is $\Sem$ compositional? Is the state transition semantics $[[\cdot]]$ compositional with respect to $\Sem$? Is it fully abstract?
+
+Is $\Sem$ compositional? Is the state transition semantics $[[\cdot]]$ compositional with respect to $\Sem$? 
+Is it fully abstract?
+}
+
 \end{enumerate}
+
+
+%% ==================================================================
+%% IMPERATIVE REASONING
+%% ==================================================================
 
 \section{Imperative reasoning}
 \begin{enumerate}
 
+\question{
 \item[2.1] Prove or disprove the following statements.
 \begin{enumerate}
 \item[a)] The programs $(\whilesym\; \B \; \dosym \; \C); (\ifsym \; \B \; \then \; \C_1 \; \elsesym \; \C_2)$ and $(\whilesym \; \B \; \dosym \; \C);\C_2$
 are equivalent with respect to the state transition semantics $[[\cdot]]$.
-\item[b)] The programs $\whilesym\; \B \; \dosym \; \C$ and $\whilesym \; \B \; \dosym \; (\C;\ifsym \; \B \; \then \; \C \; \elsesym \; \skipsym)$ are equivalent with respect to the state transition semantics $[[\cdot]]$.
-\item[c)] The programs $\whilesym\; \B \; \dosym \; (\whilesym \; \B \; \dosym \; \C)$ and $\whilesym\; \B \; \dosym \; \C$ are contextually equivalent with respect to the state transition semantics $[[\cdot]]$.
-\end{enumerate}
 
+\item[b)] The programs $\whilesym\; \B \; \dosym \; \C$ and $\whilesym \; \B \; \dosym \; (\C;\ifsym \; \B \; \then \; \C \; \elsesym \; \skipsym)$ are 
+equivalent with respect to the state transition semantics $[[\cdot]]$.
+
+\item[c)] The programs $\whilesym\; \B \; \dosym \; (\whilesym \; \B \; \dosym \; \C)$ and $\whilesym\; \B \; \dosym \; \C$ are 
+contextually equivalent with respect to the state transition semantics $[[\cdot]]$.
+\end{enumerate}
+}
+
+\question{
 \item[2.2] Under what conditions are the programs
 \begin{enumerate} 
+
 \item[a)] $\C;(\ifsym \; \B \; \then\; \C_1\; \elsesym \; \C_2)$ and $\ifsym \; \B \; \then\; (\C; \C_1) \; \elsesym \; (\C; \C_2)$
 \item[b)] $(\ifsym \; \B \; \then\; \C_1 \; \elsesym \; \C_2); (\ifsym \; \B \; \then \; \C_3 \; \elsesym \; \C_4)$ and $\ifsym \; \B \; \then\; (\C_1;\C_3) \; \elsesym \; (\C_2;\C_4)$
 \end{enumerate}
-equivalent with respect to the state transition semantics $[[\cdot]]$?
 
+equivalent with respect to the state transition semantics $[[\cdot]]$?
+}
+
+\question{
 \item[2.3] Show that the following program computes the greatest common divisor of two positive integers $x,y$:
+
 \begin{align*}
 & \whilesym \; \notsym(x = y) \; \dosym \\
 & \;\;\;\;\; \whilesym \; (x < y) \; \dosym \; y := y - x; \\
 & \;\;\;\;\; \whilesym \; (y < x) \; \dosym \; x := x - y
 \end{align*}
-Here we write $\E_1 < \E_2$ for $\E_1 \leq \E_2 \; \andsym \; \notsym(\E_1 = \E_2)$ and $\E_1 - \E_2$ for $\E_1 + \negation(\E_2)$. What are the values of the above program under the input/output and termination semantics? How do your answers change if we instead consider the program
+
+Here we write $\E_1 < \E_2$ for $\E_1 \leq \E_2 \; \andsym \; \notsym(\E_1 = \E_2)$ and $\E_1 - \E_2$ for $\E_1 + \negation(\E_2)$. 
+What are the values of the above program under the input/output and termination semantics? 
+How do your answers change if we instead consider the program
+
 \begin{align*}
 & \whilesym \; \notsym(x = y) \; \dosym \\
 & \;\;\;\;\; \whilesym \; {\color{red} (x \leq y)} \; \dosym \; y := y - x; \\
 & \;\;\;\;\; \whilesym \; {\color{red} (y \leq x)} \; \dosym \; x := x - y
 \end{align*}
+}
+
 \end{enumerate}
+
 \end{document}
 
 
