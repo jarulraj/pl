@@ -1,0 +1,129 @@
+
+\documentclass{article}
+
+\usepackage{amsmath}
+\usepackage{latexsym,amsthm,amssymb,amscd,url,enumerate}
+\usepackage[show]{ed}
+\usepackage[all]{xy}
+\usepackage{tikz}
+\usepackage{tikz-cd}
+\usepackage{leftidx}
+\usetikzlibrary{arrows}
+
+\begin{document}
+
+\newcommand{\E}{\mathtt{e}}
+\newcommand{\B}{\mathtt{b}}
+\newcommand{\C}{\mathtt{c}}
+\newcommand{\R}{\mathtt{R}}
+\newcommand{\LL}{\mathtt{L}}
+\newcommand{\Sem}{\mathtt{S}}
+\newcommand{\true}{\mathtt{true}}
+\newcommand{\false}{\mathtt{false}}
+\newcommand{\andsym}{\mathtt{and}}
+\newcommand{\orsym}{\mathtt{or}}
+\newcommand{\notsym}{\mathop{\mathtt{not}}}
+\newcommand{\ifsym}{\mathtt{if}}
+\newcommand{\then}{\mathtt{then}}
+\newcommand{\elsesym}{\mathtt{else}}
+\newcommand{\whilesym}{\mathtt{while}}
+\newcommand{\dosym}{\mathtt{do}}
+\newcommand{\skipsym}{\mathtt{skip}}
+\newcommand{\nil}{\mathtt{nil}}
+\newcommand{\case}{\mathtt{case}}
+\newcommand{\digit}{\mathtt{d}}
+\newcommand{\negation}{\mathtt{neg}}
+\newcommand{\Digit}{\mathbf{Digit}}
+\newcommand{\denot}[1]{\mathtt{[[{#1}]]}}
+
+\newtheorem{theorem}{Theorem}						
+\newtheorem{definition}[theorem]{Definition}
+\newtheorem{proposition}[theorem]{Proposition}
+\newtheorem{lemma}[theorem]{Lemma}
+\newtheorem{axiom}{Axiom}
+\newtheorem{notation}[theorem]{Notation}
+\newtheorem{corollary}[theorem]{Corollary}
+
+\title{\textbf{15-812 Semantics of Programming Languages \\ Spring 2015 \\ {\large Assignment 2}}}
+\date{}
+\author{}
+
+\maketitle
+
+\noindent In this assignment we will revisit the imperative language $\mathcal{L}$ defined by the syntax
+\begin{align*}
+& \E := \mathtt{n} \; | \; \mathtt{x} \; | \; \E_1 + \E_2 \; | \; \E_1 \cdot \E_2 \; | \; \negation(\E) \; | \; \ifsym \; \B \; \then \; \E_1 \; \elsesym \; \E_2 \\ 
+& \B := \true \; | \; \false \; | \; \B_1 \; \andsym \; \B_2 \; | \; \B_1 \; \orsym \; \B_2 \; | \; \notsym \; \B \; | \; \E_1 \leq \E_2 \\
+& \C := \skipsym \; | \; \mathtt{x} := \E \; | \; \C_1 ; \C_2 \; | \; \ifsym \; \B \; \then \; \C_1 \; \elsesym \; \C_2 \; | \; \whilesym \; \B \; \dosym \; \C
+\end{align*}
+and the state-transition $[[\cdot]]$, input/output $\mathcal{I}$, and termination $\mathcal{T}$ semantics for $\mathcal{L}$ as defined in class. Recall that two programs $\C_1, \C_2$ are 
+\begin{enumerate}
+\item \emph{equivalent} with respect to a semantics $\Sem$ if $\Sem(\C_1) = \Sem(\C_2)$
+\item \emph{contextually equivalent} with respect to $\Sem$ if $\forall \mathcal{C}, \Sem(\mathcal{C}[\C_1]) = \Sem(\mathcal{C}[\C_2])$, where $\mathcal{C}$ ranges over program contexts
+\end{enumerate}
+For two semantics $\Sem_1, \Sem_2$ we say that
+\begin{enumerate}
+	\item $\Sem_1$ is \emph{compositional} with respect to $\Sem_2$ if for any two programs $\C_1,\C_2$, we have that $\Sem_1(\C_1) = \Sem_1(\C_2)$ implies $\forall \mathcal{C}, \Sem_2(\mathcal{C}[\C_1]) = \Sem_2(\mathcal{C}[\C_2])$
+	\item $\Sem_1$ is \emph{fully abstract} with respect to $\Sem_2$ if for any two programs $\C_1,\C_2$, we have that $\forall \mathcal{C}, \Sem_2(\mathcal{C}[\C_1]) = \Sem_2(\mathcal{C}[\C_2])$ implies $\Sem_1(\C_1) = \Sem_1(\C_2)$
+	\end{enumerate}
+	A semantics $\Sem$ is \emph{compositional} if it is compositional with respect to itself.\bigskip
+
+\noindent \textbf{Please justify all answers.}
+
+\section{Revisiting semantics}
+\begin{enumerate}
+\item[1.1] 
+\begin{enumerate}
+	\item[a)] Is the input/output semantics $\mathcal{I}$ compositional? Is it fully abstract with respect to the termination semantics $\mathcal{T}$?
+  \item[b)] Is the termination semantics $\mathcal{T}$ compositional? Is it fully abstract with respect to the input/output semantics $\mathcal{I}$?
+\end{enumerate}
+\item[1.2]
+\begin{enumerate}
+	\item[a)] Give a semantics $\Sem$ such that the state transition semantics $[[\cdot]]$ is not compositional with respect to $\Sem$.
+	\item[b)] Give a semantics $\Sem$ such that the state transition semantics $[[\cdot]]$ is not fully abstract with respect to $\Sem$.
+	\end{enumerate}
+
+\item[1.3] In the previous homework assignment, question 2, you defined a denotational semantics $\Sem$ for the extended imperative language $\mathcal{L}_e$:
+\begin{align*}
+& \E := \mathtt{n} \; | \; \mathtt{x} \; | \; \E_1 + \E_2 \; | \; \E_1 \cdot \E_2 \; | \; \negation(\E) \; | \; \ifsym \; \B \; \then \; \E_1 \; \elsesym \; \E_2 \\ 
+& \B := \true \; | \; \false \; | \; \B_1 \; \andsym \; \B_2 \; | \; \B_1 \; \orsym \; \B_2 \; | \; \notsym \; \B \; | \; \E_1 \leq \E_2 \\
+& {\color{red} \LL := \nil \; | \; (\mathtt{n},\C)::\LL} \\
+& \C := \skipsym \; | \; \mathtt{x} := \E \; | \; \C_1 ; \C_2 \; | \; \ifsym \; \B \; \then \; \C_1 \; \elsesym \; \C_2 \; | \; \whilesym \; \B \; \dosym \; \C \; | \; {\color{red} \case \; \E \; \LL \; \C}
+\end{align*}
+Is $\Sem$ compositional? Is the state transition semantics $[[\cdot]]$ compositional with respect to $\Sem$? Is it fully abstract?
+\end{enumerate}
+
+\section{Imperative reasoning}
+\begin{enumerate}
+
+\item[2.1] Prove or disprove the following statements.
+\begin{enumerate}
+\item[a)] The programs $(\whilesym\; \B \; \dosym \; \C); (\ifsym \; \B \; \then \; \C_1 \; \elsesym \; \C_2)$ and $(\whilesym \; \B \; \dosym \; \C);\C_2$
+are equivalent with respect to the state transition semantics $[[\cdot]]$.
+\item[b)] The programs $\whilesym\; \B \; \dosym \; \C$ and $\whilesym \; \B \; \dosym \; (\C;\ifsym \; \B \; \then \; \C \; \elsesym \; \skipsym)$ are equivalent with respect to the state transition semantics $[[\cdot]]$.
+\item[c)] The programs $\whilesym\; \B \; \dosym \; (\whilesym \; \B \; \dosym \; \C)$ and $\whilesym\; \B \; \dosym \; \C$ are contextually equivalent with respect to the state transition semantics $[[\cdot]]$.
+\end{enumerate}
+
+\item[2.2] Under what conditions are the programs
+\begin{enumerate} 
+\item[a)] $\C;(\ifsym \; \B \; \then\; \C_1\; \elsesym \; \C_2)$ and $\ifsym \; \B \; \then\; (\C; \C_1) \; \elsesym \; (\C; \C_2)$
+\item[b)] $(\ifsym \; \B \; \then\; \C_1 \; \elsesym \; \C_2); (\ifsym \; \B \; \then \; \C_3 \; \elsesym \; \C_4)$ and $\ifsym \; \B \; \then\; (\C_1;\C_3) \; \elsesym \; (\C_2;\C_4)$
+\end{enumerate}
+equivalent with respect to the state transition semantics $[[\cdot]]$?
+
+\item[2.3] Show that the following program computes the greatest common divisor of two positive integers $x,y$:
+\begin{align*}
+& \whilesym \; \notsym(x = y) \; \dosym \\
+& \;\;\;\;\; \whilesym \; (x < y) \; \dosym \; y := y - x; \\
+& \;\;\;\;\; \whilesym \; (y < x) \; \dosym \; x := x - y
+\end{align*}
+Here we write $\E_1 < \E_2$ for $\E_1 \leq \E_2 \; \andsym \; \notsym(\E_1 = \E_2)$ and $\E_1 - \E_2$ for $\E_1 + \negation(\E_2)$. What are the values of the above program under the input/output and termination semantics? How do your answers change if we instead consider the program
+\begin{align*}
+& \whilesym \; \notsym(x = y) \; \dosym \\
+& \;\;\;\;\; \whilesym \; {\color{red} (x \leq y)} \; \dosym \; y := y - x; \\
+& \;\;\;\;\; \whilesym \; {\color{red} (y \leq x)} \; \dosym \; x := x - y
+\end{align*}
+\end{enumerate}
+\end{document}
+
+
