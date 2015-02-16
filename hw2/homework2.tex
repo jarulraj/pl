@@ -154,14 +154,23 @@
 & \C := \skipsym \; | \; \mathtt{x} := \E \; | \; \C_1 ; \C_2 \; | \; \ifsym \; \B \; \then \; \C_1 \; \elsesym \; \C_2 \; | \; \whilesym \; \B \; \dosym \; \C
 \end{align*}
 and the state-transition $[[\cdot]]$, input/output $\mathcal{I}$, and termination $\mathcal{T}$ semantics for $\mathcal{L}$ as defined in class. Recall that two programs $\C_1, \C_2$ are 
+
 \begin{enumerate}
-\item \emph{equivalent} with respect to a semantics $\Sem$ if $\Sem(\C_1) = \Sem(\C_2)$
-\item \emph{contextually equivalent} with respect to $\Sem$ if $\forall \mathcal{C}, \Sem(\mathcal{C}[\C_1]) = \Sem(\mathcal{C}[\C_2])$, where $\mathcal{C}$ ranges over program contexts
+
+\item \emph{equivalent} with respect to a semantics $\Sem$ 
+if $\Sem(\C_1) = \Sem(\C_2)$
+\item \emph{contextually equivalent} with respect to $\Sem$ 
+if $\forall \mathcal{C}, \Sem(\mathcal{C}[\C_1]) = \Sem(\mathcal{C}[\C_2])$, where $\mathcal{C}$ ranges over program contexts
+
 \end{enumerate}
+
 For two semantics $\Sem_1, \Sem_2$ we say that
 \begin{enumerate}
-	\item $\Sem_1$ is \emph{compositional} with respect to $\Sem_2$ if for any two programs $\C_1,\C_2$, we have that $\Sem_1(\C_1) = \Sem_1(\C_2)$ implies $\forall \mathcal{C}, \Sem_2(\mathcal{C}[\C_1]) = \Sem_2(\mathcal{C}[\C_2])$
-	\item $\Sem_1$ is \emph{fully abstract} with respect to $\Sem_2$ if for any two programs $\C_1,\C_2$, we have that $\forall \mathcal{C}, \Sem_2(\mathcal{C}[\C_1]) = \Sem_2(\mathcal{C}[\C_2])$ implies $\Sem_1(\C_1) = \Sem_1(\C_2)$
+	\item $\Sem_1$ is \emph{compositional} with respect to $\Sem_2$ if for any two programs $\C_1,\C_2$, 
+	we have that $\Sem_1(\C_1) = \Sem_1(\C_2)$ implies $\forall \mathcal{C}, \Sem_2(\mathcal{C}[\C_1]) = \Sem_2(\mathcal{C}[\C_2])$
+
+	\item $\Sem_1$ is \emph{fully abstract} with respect to $\Sem_2$ if for any two programs $\C_1,\C_2$, 
+	we have that $\forall \mathcal{C}, \Sem_2(\mathcal{C}[\C_1]) = \Sem_2(\mathcal{C}[\C_2])$ implies $\Sem_1(\C_1) = \Sem_1(\C_2)$
 	\end{enumerate}
 	A semantics $\Sem$ is \emph{compositional} if it is compositional with respect to itself.\bigskip
 
@@ -185,6 +194,105 @@ For two semantics $\Sem_1, \Sem_2$ we say that
 \end{enumerate}
 }
 
+(a) \begin{itemize}
+
+\item \textbf{Compositionality property :}
+
+	Yes, $\mathcal{I}$ is compositional. 
+		
+	By definition, 
+	$\mathcal{I} : \textbf{Com} \rightarrow (St \rightarrow St_{ \bot })$
+	$ \mathcal{I}(c) = | c | \cup  \{ (\sigma, \bot) \; | \; \sigma
+	\notin dom | c | \} $
+		
+	For any two programs, $\C_1,\C_2$, if we have that $\mathcal{I}(\C_1) =
+	\mathcal{I}(\C_2)$, 
+	then this implies that $|\C_1| = | \C_2|$. This directly follows from the definition.
+	Thus, input/output semantics and state transformation semantics are
+	equipollent.
+	
+	For all contexts $\mathcal{C}, \; \mathcal{I}(\mathcal{C}[\C_1]) =	
+	\mathcal{I}(\mathcal{C}[\C_2])$. This follows from the compositionality of the
+	state transformation semantics. Hence, $\mathcal{I}$ is compositional. 
+
+\item \textbf{$\mathcal{I}$ is fully abstract with respect to the termination
+semantics $\mathcal{T}$}
+
+	Yes, $\mathcal{I}$ is fully abstract with respect to the termination
+	semantics $\mathcal{T}$.
+	To show this, we consider any two programs $\C_1,\C_2$.
+	We have that $\forall \mathcal{C},	
+	\mathcal{T}(\mathcal{C}[\C_1]) = \mathcal{T}(\mathcal{C}[\C_2])$.	
+ 	
+ 	We first show that contextual equivalence with respect to $\mathcal{I}$ is 
+ 	the same as contextual equivalence with respect to $\mathcal{T}$.
+	We show this using a contrapositive example comprising of a set of commands
+	$\C_1$ and $\C_2$, where $\mathcal{I}(\C_1) ̸\neq \mathcal{I}(\C_2)$.
+	Here, we argue that there exists a context $C$ in which 
+	$\mathcal{T}(C [\C_1 ]) \neq \mathcal{T}(C [\C_2 ])$.
+	Consider a state transition $(\sigma,\tau) \in \mathcal(\C_1)$ and
+	that $(\sigma,\tau) \notin \mathcal(\C_2)$.
+	Let the $dom(\tau)$ comprise of $x_{l}$ and let $\tau(x_{l}) = v_{l}$. 
+	Let $b$ be the boolean expression $x_{l} \neq v_{l}$.
+
+	Now, consider the context $C = [ \_ ];$ $\ifsym$ b $ \then \; \skipsym \;
+	\elsesym \; \whilesym \; \true \; \dosym \; \skipsym$. Clearly, executing
+	$C[\C_1]$ from $\sigma$ terminates, but executing $C[\C_2]$ from $\sigma$ does not terminate. Thus, 
+	contextual equivalence with respect to $\mathcal{I}$ is the same as 
+	contextual equivalence with respect to $\mathcal{T}$.
+    We already showed that input/output semantics and state transformation
+    semantics are equipollent.
+    This implies that if $\forall \mathcal{C},
+    \mathcal{T}(\mathcal{C}[\C_1]) = \mathcal{T}(\mathcal{C}[\C_2])$, 
+    then $| \C_1 | = | \C_2 |$. As, $\mathcal{I}$ and $|.|$ are equipollent,
+	$\mathcal{I}(\C_1) = \mathcal{I}(\C_2)$
+	
+\end{itemize}
+
+(b) \begin{itemize}
+
+\item \textbf{Compositionality property :}
+
+	No, $\mathcal{T}$ is not compositional.
+
+	For any two programs, $\C_1,\C_2$, if $\mathcal{T}$ is compositional,
+	then : if we have that $\mathcal{T}(\C_1) = \mathcal{T}(\C_2)$, then 
+	this implies that for all contexts $\mathcal{C}, \;
+	\mathcal{T}(\mathcal{C}[\C_1]) = \mathcal{T}(\mathcal{C}[\C_2])$.
+	However, we give a counterexample.
+		
+	Consider the programs $\C_1 = (x = 1;)$ and $\C_2 = (x = 2;)$.
+	Clearly, $\mathcal{T}(\C_1) = \mathcal{T}(\C_2)$.
+	However, consider the context $C = [ \_ ];$ $\ifsym \; x = 1 \; \then \;
+	\skipsym \; \elsesym \; \whilesym \; \true \; \dosym \; \skipsym$.
+	In this case,  $\mathcal{T}(\mathcal{C}[\C_1]) \neq \mathcal{T}(\mathcal{C}
+	[\C_2])$, because it terminates in the former case but not in the later
+	case. Hence, $\mathcal{T}$ is not compositional. 
+
+\item \textbf{$\mathcal{T}$ is fully abstract with respect to the termination
+semantics $\mathcal{I}$}
+
+	Yes, $\mathcal{T}$ is fully abstract with respect to the termination
+	semantics $\mathcal{I}$.
+	To show this, we consider any two programs $\C_1,\C_2$.
+	We have that $\forall \mathcal{C},	
+	\mathcal{I}(\mathcal{C}[\C_1]) = \mathcal{I}(\mathcal{C}[\C_2])$.	
+ 	
+	We showed in the previous sub-problem that contextual equivalence with respect
+	to $\mathcal{I}$ is the same as contextual equivalence with respect to 
+	$\mathcal{T}$. Furtner, we proved that input/output semantics and state
+	transformation semantics are equipollent.
+	This implies that if $\forall \mathcal{C},
+    \mathcal{I}(\mathcal{C}[\C_1]) = \mathcal{I}(\mathcal{C}[\C_2])$, 
+    then $| \C_1 | = | \C_2 |$ and therefore $\mathcal{T}(\mathcal{C}\C_1) =
+    \mathcal{T}(\mathcal{C}\C_2)$. 
+    For the identity context $\mathcal{C} = [ \_ ];$,
+    $\mathcal{T}(\C_1) = \mathcal{T}(\C_2)$. 
+    Thus,  $\mathcal{T}$ is fully abstract with respect to the termination
+	semantics $\mathcal{I}$.
+	
+\end{itemize}
+
 \question{	
 \item[1.2]
 \begin{enumerate}
@@ -195,7 +303,53 @@ For two semantics $\Sem_1, \Sem_2$ we say that
 \end{enumerate}
 }
 
+(a) Consider the semantics $\mathcal{DEPTH}$, defined thus :
 
+	$\mathcal{DEPTH} : \textbf{Com} \rightarrow (St \rightarrow St)$
+	
+	$ \mathcal{DEPTH}(c) = \{ (\sigma, [ \sigma | x : length(c) ] ) 
+	\; | \; x \in dom (\sigma) \}$,
+	
+	where the function depth is defined thus :
+	$depth$ : $\textbf{Com} \rightarrow \N$ 	
+	\begin{align*}
+	& depth(\skipsym) = 0 \\
+	& depth(x := e) = 1 + depth(e) \\
+	& depth (\C_1 ; \C_2 ) = 1 + max (depth (\C_1 ), depth (\C_2 ))	\\
+	& depth(\ifsym \; b \;  \then \;  \C_1 \;  \elsesym \;  \C_2 ) 
+	= 1 + max(depth(b), depth(\C_1), depth(\C_2)) \\
+	& depth (\whilesym \; b \;  \dosym \;  \C) = 1 + max (depth (b), depth (\C)) \\
+	\end{align*}
+	
+	Now, consider the commands $\C_1 = (x = 1;)$ and $\C_2 = (x = 1; x = 2;)$.
+	By definition of the state transition semantics, we observe that 
+	$[[ \C_1 ]] = [[ \C_2 ]] $. Intuitively, they both transition from the
+	initial state $\sigma$  to a state, where if x $\in dom(\sigma)$, then $x = 2$.
+	Now, we note that $\mathcal{DEPTH}(\C_1) = 1$ and $\mathcal{DEPTH}(\C_2) = 2$. 
+	
+	Thus, $[[ \C_1 ]] = [[ \C_2 ]]$ does \textit{not} imply
+	$\mathcal{DEPTH}(\mathcal{C}[\C_1]) = \mathcal{DEPTH}(\mathcal{C}[\C_2])$ 
+	for the identity context $\mathcal{C} = [\_];$.
+	Hence, $[[\cdot]]$ is not compositional with respect to $\mathcal{DEPTH}$.	
+ 
+
+(b) Consider the semantics $\mathcal{HITCHHIKER}$, defined thus :
+
+	$ \mathcal{HITCHHIKER}(c) = \{ (\sigma, [ \sigma | x : 42 ] ) 
+	\; | \; x \in dom (\sigma) \}$.
+	
+	Now, consider two programs $\C_1$ and $\C_2$ such that 	$[[ \C_1 ]] \neq [[
+	\C_2 ]]$. Let the initial state $\sigma \in dom(\C_1)$ and  $\sigma \in
+	dom(\C_2)$.
+	
+	$\forall \mathcal{C}$, we note that $\mathcal{HITCHHIKER}(\mathcal{C}[\C_1]) =
+	\mathcal{HITCHHIKER}(\mathcal{C}[\C_2])$.
+    This is because, they both transition from the initial state $\sigma$
+    to a state, where if x $\in dom(\sigma)$, then $x = 42$.  
+    However, we know that $[[ \C_1 ]] \neq [[ \C_2 ]]$.
+    Hence, $[[\cdot]]$ is not fully abstract with respect to
+    $\mathcal{HITCHHIKER}$.
+            
 \question{
 \item[1.3] In the previous homework assignment, question 2, you defined a denotational 
 semantics $\Sem$ for the extended imperative language $\mathcal{L}_e$:
@@ -207,9 +361,47 @@ semantics $\Sem$ for the extended imperative language $\mathcal{L}_e$:
 & \C := \skipsym \; | \; \mathtt{x} := \E \; | \; \C_1 ; \C_2 \; | \; \ifsym \; \B \; \then \; \C_1 \; \elsesym \; \C_2 \; | \; \whilesym \; \B \; \dosym \; \C \; | \; {\color{red} \case \; \E \; \LL \; \C}
 \end{align*}
 
-Is $\Sem$ compositional? Is the state transition semantics $[[\cdot]]$ compositional with respect to $\Sem$? 
+Is $\Sem$ compositional? 
+Is the state transition semantics $[[\cdot]]$ compositional with respect to $\Sem$? 
 Is it fully abstract?
 }
+
+The semantic function S : St $\rightarrow$ St is given by :
+\begin{align*}
+& S( \; skip \; ) \; = \; \{ (\sigma, \sigma) \; | \; \sigma \in St \} \\
+& S( \; x := e \; ) \; = \; \{ (\sigma, [\sigma | x : v]) \; | \; (\sigma, v)
+\in | e | \; \& \; x \in dom(\sigma) \} \\
+& S( \; \C_1 ; \C_2 ) \;  = \; \{ (\sigma, \sigma'') \; | \; \exists
+\sigma'.(\sigma, \sigma') \in | \C_1 | \; \&  \; (\sigma',\sigma'') \in | \C_2 | \} 
+\; = \; | \C_2 | \circ | \C_1 | \\
+& S( \; \ifsym \; b \; \then  \; \C_1 \; \elsesym \; \C_2 \; ) \; = \; | \;
+\C_1 | \; \circ  \; | b |_{\true} \; \cup \; |\C_2| \; \circ \; | b |_{\false} \\
+& S( \; \whilesym \; b \; \dosym \; \C \; ) \; = \; | b |_{\false} \; \circ \;
+(|c| \; \circ \; | b |_{true} )^{*} \\
+& S( \; \case \; \E \; \LL \; \C \; ) \; = \C \; \circ \; | |\E| \in
+dom(\LL) ) |_{\false} \cup \; \LL(|\E|) \; \circ \; | |\E| \in dom(L) |_{\true} 
+\end{align*}
+
+We note that if $S( \C_1 ) = S( \C_2 )$, then $\forall \mathcal{C}$, $S(
+\mathcal{C}[\C_1] ) = S( \mathcal{C}[\C_2] )$. This is because 
+each of these semantic clauses define the meaning of a compound phrase 
+from the meanings of its parts. Thus, these transition rules uniquely determine
+the semantic function on all expression arguments. Hence, it is
+compositional with respect to itself.
+
+Next, we observe that for all commands $\C_1$ and $\C_2$, $| \C_1 | = | \C_2 |$
+if and only if $S( \C_1 ) = S( \C_2 )$. In other words, the state transition semantics
+and S are equipollent. Hence, the state transition semantics $[[\cdot]]$
+is compositional with respect to $S$.
+
+Finally, if $\forall \mathcal{C}$, $S(\mathcal{C}[\C_1] ) = S( \mathcal{C}[\C_2]
+)$, then for the identity context $\mathcal{C} = [\;\_\;]; $, 
+$ S(\C_1) = S(\C_2)$. Hence, it is fully abstract with respect to itself.
+We note that by the compositionality property of the state transition semantics
+$[[\cdot]]$, if $\forall \mathcal{C}$, $| \mathcal{C}[\C_1] | = |
+\mathcal{C}[\C_2] |$, then $S(\C_1) = S(\C_2) $.
+Therefore, $S$ is fully abstract with respect to the state transition semantics
+$[[\cdot]]$.
 
 \end{enumerate}
 
