@@ -436,7 +436,7 @@ Is the state transition semantics $[[\cdot]]$ compositional with respect to $\Se
 Is it fully abstract?
 }
 
-The semantic function S : St $\rightarrow$ St is given by :
+The semantic function $\mathcal{S}$ : St $\rightarrow$ St is given by :
 \begin{align*}
 & S( \; skip \; ) \; = \; \{ (\sigma, \sigma) \; | \; \sigma \in St \} \\
 & S( \; x := e \; ) \; = \; \{ (\sigma, [\sigma | x : v]) \; | \; (\sigma, v)
@@ -512,6 +512,95 @@ contextually equivalent with respect to the state transition semantics $[[\cdot]
 \end{enumerate}
 }
 
+In this problem, we use the definitions of the state transition semantics
+$[[\cdot]]$ :
+\begin{align*}
+& \mathcal{S}( \; skip \; ) \; = \; \{ (\sigma, \sigma) \; | \; \sigma \in St \}
+\\
+& \mathcal{S}( \; x := e \; ) \; = \; \{ (\sigma, [\sigma | x : v]) \; | \;
+(\sigma, v) \in | e | \; \& \; x \in dom(\sigma) \} \\
+& \mathcal{S}( \; \C_1 ; \C_2 ) \;  = \; \{ (\sigma, \sigma'') \; | \; \exists
+\; \sigma'.(\sigma, \sigma') \in [[\C_1]] \; \&  \; (\sigma',\sigma'') \in [[\C_2]]
+\} \; = \; [[\C_2]] \circ [[\C_1]] \\
+& \mathcal{S}( \; \ifsym \; \B \; \then  \; \C_1 \; \elsesym \; \C_2 \; ) \; =
+\; \; [[\C_1]] \; \circ  \; [[\B]]_{\true} \; \cup \; [[\C_2]] \; \circ \;
+[[\B]]_{\false} \\
+& \mathcal{S}( \; \whilesym \; \B \; \dosym \; \C \; ) \; = \; [[\B]]_{\false}
+\; \circ \; ([[\C]] \; \circ \; [[\B]]_{\true} )^{*} \\
+\end{align*}
+
+\begin{enumerate}
+
+\item[a)] 
+\begin{align*}
+& \mathcal{S}(\whilesym \; \B \; \dosym \; \C);\C_2) \\
+& = [[\C_2]] \circ [[\B]]_{\false} \circ ([[\C]] \circ [[\B]]_{true} )^{*}\\
+& \\
+& \mathcal{S}(\whilesym\; \B \; \dosym \; \C); (\ifsym \; \B \; \then
+\; \C_1 \; \elsesym \; \C_2)) \\
+& =  ([[\C_1]] \circ [[\B]]_{\true} \cup [[\C_2]] \circ [[\B]]_{\false})
+\circ  
+([[\B]]_{\false} \circ ([[\C]] \circ [[\B]]_{\true} )^{*}) \\
+& =  [[\C_2]] \circ [[\B]]_{\false} \circ ([[\C]] \circ [[\B]]_{\true} )^{*}
+\end{align*}\\
+
+This is because the $\B$ must be $\false$ at the exit of the $\whilesym$ loop
+and thus $\C_2$ alone can be executed.
+Hence, the two programs are equivalent with respect to $[[\cdot]]$.\\
+
+\item[b)]
+
+\begin{align*}
+& \mathcal{S}(\whilesym\; \B \; \dosym \; \C) \\
+& = [[\B]]_{\false} \circ ([[\C]] \circ [[\B]]_{\true} )^{*} \\
+& \\
+& \mathcal{S}(\whilesym \; \B \; \dosym \; (\C;\ifsym \; \B \; \then \; \C \;
+\elsesym \; \skipsym)) \\
+& = [[\B]]_{\false} \circ ([[\C; \ifsym \; \B \; \then \; \C \;
+\elsesym \; \skipsym]] \circ [[b]]_{\true} )^{*} \\
+& = [[\B]]_{\false} \circ ( ([[\ifsym \; \B \; \then \; \C \;
+\elsesym \; \skipsym]] \circ [[\C]]) \circ [[\B]]_{\true} )^{*} \\
+& = [[\B]]_{\false} \circ ( ( ([[\C]] \circ [[\B]]_{\true} \cup [[\skipsym]]
+\circ [[\B]]_{\false}) \circ [[\C]]) \circ [[\B]]_{\true} )^{*} \\
+& = [[\B]]_{\false} \circ ( ([[\C]] \circ [[\B]]_{\true} 
+\circ [[\C]] \circ [[\B]]_{\true} )^{*} \cup 
+([[\skipsym]] \circ [[\B]]_{\false} \circ [[\C]] \circ [[\B]]_{\true} )^{*} ) \\
+& =  [[\B]]_{\false} \circ ([[\C]] \circ [[\B]]_{\true} )^{*} \\
+\end{align*}
+
+This is because $\B$ must be $\true$ within the $\whilesym$ loop
+for $\C$ to be executed and this is equivalent to the earlier $\whilesym$ loop.
+Hence, the two programs are equivalent with respect to $[[\cdot]]$.\\
+
+\item[c)] 
+
+\begin{align*}
+& \mathcal{S}(\whilesym\; \B \; \dosym \; \C) \\
+& = [[\B]]_{\false} \circ ([[\C]] \circ | b |_{\true} )^{*} \\
+& \\
+& \mathcal{S}(\whilesym\; \B \; \dosym \; (\whilesym \; \B \; \dosym \; \C)\\
+& = [[\B]]_{\false} \circ ([[ \; [[\B]]_{\false} \circ ([[\C]] \circ
+[[\B]]_{\true} )^{*} ]] \circ | b |_{\true} )^{*} \\
+& = [[\B]]_{\false} \circ ([[\C]] \circ [[\B]]_{\true} \circ [[\B]]_{\true}
+)^{*}
+\\
+& = [[\B]]_{\false} \circ ([[\C]] \circ [[\B]]_{\true} )^{*} \\
+\end{align*}
+
+This is because $\B$ must be $\true$ within the inner $\whilesym$ loop
+for $\C$ to be executed and this is equivalent to the earlier $\whilesym$ loop.
+Hence, the two programs are equivalent with respect to $[[\cdot]]$.\\
+
+As $[[\cdot]]$ is compositional, thus, \\
+
+$[[\C_1]] = [[\C_2]] \rightarrow \forall \mathcal{C}, \;	
+	[[\mathcal{C}[\C_1]]] = [[\mathcal{C}[\C_2]]]$.\\
+
+Hence, the two programs are contextually equivalent with respect to $[[\cdot]]$.
+
+\end{enumerate}
+
+
 \question{
 \item[2.2] Under what conditions are the programs
 \begin{enumerate} 
@@ -522,6 +611,48 @@ contextually equivalent with respect to the state transition semantics $[[\cdot]
 
 equivalent with respect to the state transition semantics $[[\cdot]]$?
 }
+
+\begin{enumerate}
+  
+\item[a)] 
+
+$P_1 = (\C;(\ifsym \; \B_1 \; \then\; \C_1\; \elsesym \; \C_2)$, and\\
+$P_2 = \ifsym \; \B_2 \; \then\; (\C; \C_1) \; \elsesym \; (\C; \C_2)$.\\
+
+Intuitively, executing $\C$ must not alter the initial truth value of $\B$.
+Otherwise, we execute along one path in $P_1$, and another path in $P_2$. \\
+
+Formally, we require that $[[\B_1]] = [[\B_2]]$. 
+This can happen in two ways. 
+$( (free(\B_1) \cap writes(\C) = \phi) \; \orsym \; ( free(\B_1) \cap
+writes(\C) \neq \phi \; \andsym \; [[\B_1]] = [[\B_2]]) )$.\\
+
+This ensures that $[[P_1]] = [[P_2]]$. \\
+
+\item[b)] 
+
+$P_1 = (\ifsym \; \B_1 \; \then\; \C_1 \; \elsesym \; \C_2); (\ifsym \; \B_2 \;
+\then \; \C_3 \; \elsesym \; \C_4)$, and\\
+$P_2 = \ifsym \; \B_3 \; \then\; (\C_1;\C_3) \; \elsesym \; (\C_2;\C_4)$.\\
+
+Intuitively, if $\B_1$ is true, we require that
+executing $\C_1$ must not alter the truth value of $\B_2$, and, 
+if $\B_1$ is false, we require that executing 
+$\C_2$ must not alter the truth value of $\B_2$.
+Otherwise, we execute along one path in $P_1$ and another path in $P_2$. \\
+
+Formally, we require that $[[\B_1]] = [[\B_2]]$. This can happen in two ways.
+Either, $\B_1 = \true$ $\andsym$ 
+$( (free(\B_2) \cap writes(\C_1) = \phi) \; \orsym \; ( free(\B_2) \cap
+writes(\C_1) \neq \phi \; \andsym \; [[\B_1]] = [[\B_2]]) )$.\\
+Or, $\B_1 = \false$ $\andsym$ 
+$( (free(\B_2) \cap writes(\C_2) = \phi) \; \orsym \; ( free(\B_2) \cap
+writes(\C_2) \neq \phi \; \andsym \; [[\B_1]] = [[\B_2]]) )$.\\
+
+This ensures that $[[P_1]] = [[P_2]]$.\\
+
+\end{enumerate}
+
 
 \question{
 \item[2.3] Show that the following program computes the greatest common divisor of two positive integers $x,y$:
