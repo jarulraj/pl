@@ -194,104 +194,143 @@ For two semantics $\Sem_1, \Sem_2$ we say that
 \end{enumerate}
 }
 
-(a) \begin{itemize}
+\begin{enumerate}
+\item[a)] \begin{itemize}
 
-\item \textbf{Compositionality property :}
+\item \textbf{Compositionality property :}\\
 
-	Yes, $\mathcal{I}$ is compositional. 
+	\textbf{Yes}, $\mathcal{I}$ is compositional with respect to itself.
+	For this to hold, we need to show that :
+	
+	$\mathcal{I}(\C_1) = \mathcal{I}(\C_2) \rightarrow 
+	\forall \mathcal{C}, \;	
+	\mathcal{I}(\mathcal{C}[\C_1]) = \mathcal{I}(\mathcal{C}[\C_2])$.
 		
-	By definition, 
-	$\mathcal{I} : \textbf{Com} \rightarrow (St \rightarrow St_{ \bot })$
+	By definition, \\
+	
+	$\mathcal{I} : \textbf{Com} \rightarrow (St \rightarrow St_{ \bot })$\\
 	$ \mathcal{I}(c) = | c | \cup  \{ (\sigma, \bot) \; | \; \sigma
-	\notin dom | c | \} $
+	\notin dom | c | \} $\\
 		
 	For any two programs, $\C_1,\C_2$, if we have that $\mathcal{I}(\C_1) =
 	\mathcal{I}(\C_2)$, 
-	then this implies that $|\C_1| = | \C_2|$. This directly follows from the definition.
-	Thus, input/output semantics and state transformation semantics are
+	then this implies that $|\C_1| = | \C_2|$. This follows directly from the
+	definition.	
+	Thus, $\mathcal{I}$ semantics and $[[\cdot]]$ semantics are
 	equipollent.
+	Due to the compositionality of the state transition semantics,
+	$|\C_1| = | \C_2|$ if and only if 
+	$\forall \mathcal{C}, \; \mathcal{I}(\mathcal{C}[\C_1]) =
+	\mathcal{I}(\mathcal{C}[\C_2])$.  \\
 	
-	For all contexts $\mathcal{C}, \; \mathcal{I}(\mathcal{C}[\C_1]) =	
-	\mathcal{I}(\mathcal{C}[\C_2])$. This follows from the compositionality of the
-	state transformation semantics. Hence, $\mathcal{I}$ is compositional. 
+	Hence, $\mathcal{I}$ is compositional.\\
 
 \item \textbf{$\mathcal{I}$ is fully abstract with respect to the termination
-semantics $\mathcal{T}$}
+semantics $\mathcal{T}$ :}\\
 
-	Yes, $\mathcal{I}$ is fully abstract with respect to the termination
-	semantics $\mathcal{T}$.
-	To show this, we consider any two programs $\C_1,\C_2$.
-	We have that $\forall \mathcal{C},	
-	\mathcal{T}(\mathcal{C}[\C_1]) = \mathcal{T}(\mathcal{C}[\C_2])$.	
- 	
- 	We first show that contextual equivalence with respect to $\mathcal{I}$ is 
- 	the same as contextual equivalence with respect to $\mathcal{T}$.
-	We show this using a contrapositive example comprising of a set of commands
-	$\C_1$ and $\C_2$, where $\mathcal{I}(\C_1) ̸\neq \mathcal{I}(\C_2)$.
-	Here, we argue that there exists a context $C$ in which 
-	$\mathcal{T}(C [\C_1 ]) \neq \mathcal{T}(C [\C_2 ])$.
-	Consider a state transition $(\sigma,\tau) \in \mathcal(\C_1)$ and
-	that $(\sigma,\tau) \notin \mathcal(\C_2)$.
-	Let the $dom(\tau)$ comprise of $x_{l}$ and let $\tau(x_{l}) = v_{l}$. 
-	Let $b$ be the boolean expression $x_{l} \neq v_{l}$.
+	\textbf{Yes}, $\mathcal{I}$ is fully abstract with respect to the termination
+	semantics $\mathcal{T}$.\\
 
-	Now, consider the context $C = [ \_ ];$ $\ifsym$ b $ \then \; \skipsym \;
-	\elsesym \; \whilesym \; \true \; \dosym \; \skipsym$. Clearly, executing
-	$C[\C_1]$ from $\sigma$ terminates, but executing $C[\C_2]$ from $\sigma$ does not terminate. Thus, 
-	contextual equivalence with respect to $\mathcal{I}$ is the same as 
-	contextual equivalence with respect to $\mathcal{T}$.
-    We already showed that input/output semantics and state transformation
-    semantics are equipollent.
-    This implies that if $\forall \mathcal{C},
-    \mathcal{T}(\mathcal{C}[\C_1]) = \mathcal{T}(\mathcal{C}[\C_2])$, 
-    then $| \C_1 | = | \C_2 |$. As, $\mathcal{I}$ and $|.|$ are equipollent,
-	$\mathcal{I}(\C_1) = \mathcal{I}(\C_2)$
+	For this property to hold, we need to show that :
 	
+	$\forall \mathcal{C}, \;	
+	\mathcal{T}(\mathcal{C}[\C_1]) = \mathcal{T}(\mathcal{C}[\C_2])	
+	\rightarrow 
+	\mathcal{I}(\C_1) = \mathcal{I}(\C_2) $ \\
+	
+	We prove this by proving its contrapositive. 
+
+	$ \mathcal{I}(\C_1) \neq \mathcal{I}(\C_2) 	\rightarrow 	
+	\exists \; \mathcal{C},	
+	\mathcal{T}(\mathcal{C}[\C_1]) \neq \mathcal{T}(\mathcal{C}[\C_2])$ \\
+
+ 	Consider a set of commands $\C_1$ and $\C_2$, where $\mathcal{I}(\C_1) ̸\neq
+ 	\mathcal{I}(\C_2)$.
+	We will show that there exists a context $C$ in which 
+	$\mathcal{T}(C [\C_1 ]) \neq \mathcal{T}(C [\C_2 ])$.
+	Let the state transition $(\sigma,\tau) \in \mathcal{I}(\C_1)$ and
+	$(\sigma,\tau) \notin \mathcal{I}(\C_2)$.
+	Let the $dom(\tau)$ comprise of $x_{l}$ and let $\tau(x_{l}) = v_{l}$. 
+	Let $b$ be the boolean expression $x_{l} = v_{l}$.\\
+
+	Now, consider the context $\mathcal{C} := [ \-- ];$ $\ifsym$ b $ \then \;
+	\skipsym \; \elsesym \; \whilesym \; \true \; \dosym \; \skipsym$. Clearly, executing
+	$\mathcal{C}[\C_1]$ from $\sigma$ terminates, but executing $\mathcal{C}[\C_2]$
+	from $\sigma$ does not terminate.
+	Thus, $\mathcal{T}(C [\C_1 ]) \neq \mathcal{T}(C [\C_2 ])$.
+	We have shown that contextual equivalence with respect 
+	to $\mathcal{I}$ is the same as contextual equivalence with respect to
+	$\mathcal{T}$.
+	Therefore, $\mathcal{I}$ is fully abstract with respect to the termination
+	semantics $\mathcal{T}$.\\
+			
 \end{itemize}
 
-(b) \begin{itemize}
+\item[b)] \begin{itemize}
 
-\item \textbf{Compositionality property :}
+\item \textbf{Compositionality property :}\\
 
-	No, $\mathcal{T}$ is not compositional.
+	\textbf{No}, $\mathcal{T}$ is not compositional with respect to itself.
+	For $\mathcal{T}$ to satisfy the compositionality property, 
+	we need to show that :\\
+	
+	$\mathcal{T}(\C_1) = \mathcal{T}(\C_2) \rightarrow 
+	\forall \mathcal{C}, \;	
+	\mathcal{T}(\mathcal{C}[\C_1]) = \mathcal{T}(\mathcal{C}[\C_2])$.\\
 
-	For any two programs, $\C_1,\C_2$, if $\mathcal{T}$ is compositional,
-	then : if we have that $\mathcal{T}(\C_1) = \mathcal{T}(\C_2)$, then 
-	this implies that for all contexts $\mathcal{C}, \;
-	\mathcal{T}(\mathcal{C}[\C_1]) = \mathcal{T}(\mathcal{C}[\C_2])$.
-	However, we give a counterexample.
-		
-	Consider the programs $\C_1 = (x = 1;)$ and $\C_2 = (x = 2;)$.
-	Clearly, $\mathcal{T}(\C_1) = \mathcal{T}(\C_2)$.
-	However, consider the context $C = [ \_ ];$ $\ifsym \; x = 1 \; \then \;
+	We show a counterexample to disprove this. Consider	any two programs,
+	$\C_1,\C_2$, such that $\mathcal{T}(\C_1) = \mathcal{T}(\C_2)$.
+	We show that there exists a context in $\mathcal{C}$, such that
+	$\mathcal{T}(\mathcal{C}[\C_1]) \neq \mathcal{T}(\mathcal{C}[\C_2])$.\\
+			
+	Consider the programs $\C_1 = x := 1; $ and $\C_2 = x := 2;$.\\
+	$\mathcal{T}(\C_1) = \{ (\sigma, \top) \; | \; x \in dom(\sigma) \} 
+	\cup \{ (\sigma, \bot) \; | \; x \notin dom(\sigma) \}$ and\\ 
+	$\mathcal{T}(\C_2) = \{ (\sigma, \top) \; | \; x \in dom(\sigma) \} 
+	\cup \{ (\sigma, \bot) \; | \; x \notin dom(\sigma) \}$. 
+	Thus, $\mathcal{T}(\C_1) = \mathcal{T}(\C_2) $.\\
+	
+	However, consider the context $C = [ \-- ];$ $\ifsym \; x = 1 \; \then \;
 	\skipsym \; \elsesym \; \whilesym \; \true \; \dosym \; \skipsym$.
 	In this case,  $\mathcal{T}(\mathcal{C}[\C_1]) \neq \mathcal{T}(\mathcal{C}
 	[\C_2])$, because it terminates in the former case but not in the later
-	case. Hence, $\mathcal{T}$ is not compositional. 
+	case. Hence, there exists a context in $\mathcal{C}$, such that
+	$\mathcal{T}(\mathcal{C}[\C_1]) \neq \mathcal{T}(\mathcal{C}[\C_2])$.
+	Therefore, $\mathcal{T}$ is not compositional. \\
 
 \item \textbf{$\mathcal{T}$ is fully abstract with respect to the termination
-semantics $\mathcal{I}$}
+semantics $\mathcal{I}$ :}\\
 
-	Yes, $\mathcal{T}$ is fully abstract with respect to the termination
-	semantics $\mathcal{I}$.
-	To show this, we consider any two programs $\C_1,\C_2$.
-	We have that $\forall \mathcal{C},	
-	\mathcal{I}(\mathcal{C}[\C_1]) = \mathcal{I}(\mathcal{C}[\C_2])$.	
- 	
-	We showed in the previous sub-problem that contextual equivalence with respect
-	to $\mathcal{I}$ is the same as contextual equivalence with respect to 
-	$\mathcal{T}$. Furtner, we proved that input/output semantics and state
-	transformation semantics are equipollent.
-	This implies that if $\forall \mathcal{C},
+	\textbf{Yes}, $\mathcal{T}$ is fully abstract with respect to the termination
+	semantics $\mathcal{I}$.\\
+
+	For this property to hold, we need to show that :
+	
+	$\forall \mathcal{C}, \;	
+	\mathcal{I}(\mathcal{C}[\C_1]) = \mathcal{I}(\mathcal{C}[\C_2])	
+	\rightarrow 
+	\mathcal{T}(\C_1) = \mathcal{T}(\C_2) $ \\
+
+    We already showed that $\mathcal{I}$ semantics and $[[\cdot]]$
+    semantics are equipollent.
+    This implies that if $\forall \mathcal{C}, 
     \mathcal{I}(\mathcal{C}[\C_1]) = \mathcal{I}(\mathcal{C}[\C_2])$, 
-    then $| \C_1 | = | \C_2 |$ and therefore $\mathcal{T}(\mathcal{C}\C_1) =
-    \mathcal{T}(\mathcal{C}\C_2)$. 
-    For the identity context $\mathcal{C} = [ \_ ];$,
-    $\mathcal{T}(\C_1) = \mathcal{T}(\C_2)$. 
-    Thus,  $\mathcal{T}$ is fully abstract with respect to the termination
-	semantics $\mathcal{I}$.
+    then $| \C_1 | = | \C_2 |$.\\ 
+
+    Further, we showed that contextual equivalence with respect to $\mathcal{I}$
+	is the same as contextual equivalence with respect to $\mathcal{T}$.
+	Since $[[\cdot]]$ semantics is fully abstract with respect to $\mathcal{I}$, 
+	it is also fully abstract with respect to $\mathcal{T}$.
+	Thus, if $| \C_1 | = | \C_2 |$, then we have
+	$\forall \mathcal{C},	
+	\mathcal{T}(\mathcal{C}[\C_1]) = \mathcal{T}(\mathcal{C}[\C_2])$.\\	
+    Now, consider the identity context $\mathcal{C} = [ \-- ];$. Clearly,
+    if $| \C_1 | = | \C_2 |$, then $\mathcal{T}(\C_1) = \mathcal{T}(\C_2)$. 
+    Therefore,  $\mathcal{T}$ is fully abstract with respect to the termination
+	semantics $\mathcal{I}$.\\
 	
 \end{itemize}
+\end{enumerate}
 
 \question{	
 \item[1.2]
@@ -303,14 +342,23 @@ semantics $\mathcal{I}$}
 \end{enumerate}
 }
 
-(a) Consider the semantics $\mathcal{DEPTH}$, defined thus :
+\begin{enumerate}
+\item[a)] 
+	For the $[[\cdot]]$ semantics to not satisfy the compositionality property
+	with respect to $\mathcal{S}$, we need to show that :\\
+	
+	$[[\C_1]] = [[\C_2]] \nrightarrow 
+	\forall \mathcal{C}, \;	
+	\mathcal{S}(\mathcal{C}[\C_1]) = \mathcal{S}(\mathcal{C}[\C_2])$.\\
+
+	Consider the semantics $\mathcal{DEPTH}$, defined thus :\\
 
 	$\mathcal{DEPTH} : \textbf{Com} \rightarrow (St \rightarrow St)$
 	
-	$ \mathcal{DEPTH}(c) = \{ (\sigma, [ \sigma | x : length(c) ] ) 
+	$ \mathcal{DEPTH}(c) = \{ (\sigma, [ \sigma | x : depth(c) ] ) 
 	\; | \; x \in dom (\sigma) \}$,
 	
-	where the function depth is defined thus :
+	where the function depth is defined thus :	
 	$depth$ : $\textbf{Com} \rightarrow \N$ 	
 	\begin{align*}
 	& depth(\skipsym) = 0 \\
@@ -321,34 +369,56 @@ semantics $\mathcal{I}$}
 	& depth (\whilesym \; b \;  \dosym \;  \C) = 1 + max (depth (b), depth (\C)) \\
 	\end{align*}
 	
-	Now, consider the commands $\C_1 = (x = 1;)$ and $\C_2 = (x = 1; x = 2;)$.
+	Now, consider the commands $\C_1 = x := 2;$ and $\C_2 = x := 1; x := 2;$.
 	By definition of the state transition semantics, we observe that 
 	$[[ \C_1 ]] = [[ \C_2 ]] $. Intuitively, they both transition from the
-	initial state $\sigma$  to a state, where if x $\in dom(\sigma)$, then $x = 2$.
-	Now, we note that $\mathcal{DEPTH}(\C_1) = 1$ and $\mathcal{DEPTH}(\C_2) = 2$. 
+	initial state $\sigma$  to a state, where if x $\in dom(\sigma)$, then $x =
+	2$.\\
 	
-	Thus, $[[ \C_1 ]] = [[ \C_2 ]]$ does \textit{not} imply
-	$\mathcal{DEPTH}(\mathcal{C}[\C_1]) = \mathcal{DEPTH}(\mathcal{C}[\C_2])$ 
-	for the identity context $\mathcal{C} = [\_];$.
-	Hence, $[[\cdot]]$ is not compositional with respect to $\mathcal{DEPTH}$.	
+	Now, we note that $depth(\C_1) = 1$ and $depth(\C_2) = 2$. Thus,
+	$\mathcal{DEPTH}([\C_1]) \neq \mathcal{DEPTH}([\C_2])$, as the values
+	of all variables differ in both cases. We have shown that 
+	$[[ \C_1 ]] = [[ \C_2 ]]$ does \textit{not} imply
+	$\mathcal{DEPTH}(\mathcal{C}[\C_1]) = \mathcal{DEPTH}(\mathcal{C}[\C_2])$,
+	in this case for the identity context $\mathcal{C} = [\--];$.
+	Thus, $[[\cdot]]$ is not compositional with respect to $\mathcal{DEPTH}$.\\	
  
 
-(b) Consider the semantics $\mathcal{HITCHHIKER}$, defined thus :
+\item[b)] 
+	For the $[[\cdot]]$ semantics to not be fully abstract
+	with respect to $\mathcal{S}$, we need to show that :\\
+
+	$\forall \mathcal{C}, \;	
+	\mathcal{S}(\mathcal{C}[\C_1]) = \mathcal{S}(\mathcal{C}[\C_2])	
+	\nrightarrow 
+	[[\C_1]] = [[\C_2]] $ \\
+
+	Consider the semantics $\mathcal{HITCHHIKER}$, defined thus :\\
 
 	$ \mathcal{HITCHHIKER}(c) = \{ (\sigma, [ \sigma | x : 42 ] ) 
-	\; | \; x \in dom (\sigma) \}$.
+	\; | \; x \in dom (\sigma) \}$.\\
 	
-	Now, consider two programs $\C_1$ and $\C_2$ such that 	$[[ \C_1 ]] \neq [[
-	\C_2 ]]$. Let the initial state $\sigma \in dom(\C_1)$ and  $\sigma \in
-	dom(\C_2)$.
-	
-	$\forall \mathcal{C}$, we note that $\mathcal{HITCHHIKER}(\mathcal{C}[\C_1]) =
+	We show this using a counterexample. 
+	Consider any two programs $\C_1$ and $\C_2$ such that $[[ \C_1 ]] \neq [[\C_2
+	]]$, for instance $\C_1 = x := 1;$ and $\C_2 = x := 2;$.
+	Let the initial state $\sigma \in dom(\C_1)$ and  $\sigma \in dom(\C_2)$.\\
+
+	We observe that	$\forall \mathcal{C} \;$, 
+	$\mathcal{HITCHHIKER}(\mathcal{C}[\C_1]) =
 	\mathcal{HITCHHIKER}(\mathcal{C}[\C_2])$.
     This is because, they both transition from the initial state $\sigma$
-    to a state, where if x $\in dom(\sigma)$, then $x = 42$.  
-    However, we know that $[[ \C_1 ]] \neq [[ \C_2 ]]$.
+    to a state, where if x $\in dom(\sigma)$, then $x = 42$.      
+    However, $[[ \C_1 ]] \neq [[ \C_2 ]]$. Thus,\\
+
+    $\forall \mathcal{C}, \;	
+	\mathcal{S}(\mathcal{C}[\C_1]) = \mathcal{S}(\mathcal{C}[\C_2])	
+	\nrightarrow 
+	[[\C_1]] = [[\C_2]] $ \\
+    
     Hence, $[[\cdot]]$ is not fully abstract with respect to
     $\mathcal{HITCHHIKER}$.
+
+\end{enumerate}
             
 \question{
 \item[1.3] In the previous homework assignment, question 2, you defined a denotational 
@@ -382,27 +452,42 @@ The semantic function S : St $\rightarrow$ St is given by :
 dom(\LL) ) |_{\false} \cup \; \LL(|\E|) \; \circ \; | |\E| \in dom(L) |_{\true} 
 \end{align*}
 
-We note that if $S( \C_1 ) = S( \C_2 )$, then $\forall \mathcal{C}$, $S(
-\mathcal{C}[\C_1] ) = S( \mathcal{C}[\C_2] )$. This is because 
-each of these semantic clauses define the meaning of a compound phrase 
-from the meanings of its parts. Thus, these transition rules uniquely determine
-the semantic function on all expression arguments. Hence, it is
-compositional with respect to itself.
+\begin{itemize}
+  
+\item We observe that for all commands $\C_1$ and $\C_2$, 
+$[[\C_1]] = [[\C_2]]$ if and only if $\mathcal{S}(\C_1) = \mathcal{S}(\C_2)$. 
+Hence, $\mathcal{S}$ and $[[\cdot]]$ are 
+equipollent. By the compositionality property of $[[\cdot]]$,\\
 
-Next, we observe that for all commands $\C_1$ and $\C_2$, $| \C_1 | = | \C_2 |$
-if and only if $S( \C_1 ) = S( \C_2 )$. In other words, the state transition semantics
-and S are equipollent. Hence, the state transition semantics $[[\cdot]]$
-is compositional with respect to $S$.
+$[[\C_1]] = [[\C_2]] \rightarrow  
+ \forall \mathcal{C}, \;	
+ \mathcal{S}(\mathcal{C}[\C_1]) = \mathcal{S}(\mathcal{C}[\C_2])$. \\
 
-Finally, if $\forall \mathcal{C}$, $S(\mathcal{C}[\C_1] ) = S( \mathcal{C}[\C_2]
-)$, then for the identity context $\mathcal{C} = [\;\_\;]; $, 
-$ S(\C_1) = S(\C_2)$. Hence, it is fully abstract with respect to itself.
-We note that by the compositionality property of the state transition semantics
-$[[\cdot]]$, if $\forall \mathcal{C}$, $| \mathcal{C}[\C_1] | = |
-\mathcal{C}[\C_2] |$, then $S(\C_1) = S(\C_2) $.
-Therefore, $S$ is fully abstract with respect to the state transition semantics
-$[[\cdot]]$.
+Hence, $[[\cdot]]$ is compositional with respect to $S$.
 
+\item We showed that $[[\C_1]] = [[\C_2]]$ if and only if $\mathcal{S}(\C_1) =
+\mathcal{S}(\C_2)$, and that 
+$[[\C_1]] = [[\C_2]] \rightarrow  \forall
+\mathcal{C}, \; \mathcal{S}(\mathcal{C}[\C_1]) = \mathcal{S}(\mathcal{C}[\C_2])$. \\
+
+ Thus,  $\mathcal{S}(\C_1) = \mathcal{S}(\C_2) \rightarrow  \forall \mathcal{C},
+ \; \mathcal{S}(\mathcal{C}[\C_1]) = \mathcal{S}(\mathcal{C}[\C_2])$. \\
+ 
+ Hence, $\mathcal{S}$ is compositional with respect to itself.
+
+\item We note that $\mathcal{S}$ is clearly fully abstract with respect to
+itself. This follows from the definition of full abstraction.\\
+
+	By the compositionality property of $[[\cdot]]$,\\
+	
+	$\forall \mathcal{C}$, $[[\mathcal{C}[\C_1]]] = [[\mathcal{C}[\C_2]]]
+	\rightarrow
+	\mathcal{S}(\C_1) = \mathcal{S}(\C_2) $.\\
+
+	Therefore, $S$ is fully abstract with respect to $[[\cdot]]$.
+
+\end{itemize}  
+  
 \end{enumerate}
 
 
