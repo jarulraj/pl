@@ -376,7 +376,7 @@ semantics $\mathcal{I}$ :}\\
 	2$.\\
 	
 	Now, we note that $depth(\C_1) = 1$ and $depth(\C_2) = 2$. Thus,
-	$\mathcal{DEPTH}([\C_1]) \neq \mathcal{DEPTH}([\C_2])$, as the values
+	$\mathcal{DEPTH}(\C_1) \neq \mathcal{DEPTH}(\C_2)$, as the values
 	of all variables differ in both cases. We have shown that 
 	$[[ \C_1 ]] = [[ \C_2 ]]$ does \textit{not} imply
 	$\mathcal{DEPTH}(\mathcal{C}[\C_1]) = \mathcal{DEPTH}(\mathcal{C}[\C_2])$,
@@ -641,7 +641,8 @@ if $\B_1$ is false, we require that executing
 $\C_2$ must not alter the truth value of $\B_2$.
 Otherwise, we execute along one path in $P_1$ and another path in $P_2$. \\
 
-Formally, we require that $[[\B_1]] = [[\B_2]]$. This can happen in two ways.
+Formally, we require that $[[\B_1]] = [[\B_2]] = [[\B_3]]$. This can happen in
+two ways.
 Either, $\B_1 = \true$ $\andsym$ 
 $( (free(\B_2) \cap writes(\C_1) = \phi) \; \orsym \; ( free(\B_2) \cap
 writes(\C_1) \neq \phi \; \andsym \; [[\B_1]] = [[\B_2]]) )$.\\
@@ -673,6 +674,204 @@ How do your answers change if we instead consider the program
 & \;\;\;\;\; \whilesym \; {\color{red} (y \leq x)} \; \dosym \; x := x - y
 \end{align*}
 }
+
+\begin{itemize}
+  
+\item \textbf{GCD proof :}
+We prove this using induction. W.L.G, let $x \geq y > 0$. \\
+
+If $y = 1$, then for any $x \geq y$, the program computes $gcd(x, y) = 1$.
+This is because, it keeps executing the second inner $\whilesym$ loop till
+$x = y = 1$.\\
+
+Assume that the program computes $gcd(x, y)$ for any $x < n$ and $y \leq x$.\\
+
+Now, in the case where $x = n$, we will show that it computes $gcd(n, y)$. 
+There are two cases. If $y = x$, then it will compute $gcd(x, y) = n$, 
+as the outer $\whilesym$ loop condition is false.
+If $y < x$, then the second inner $\whilesym$ loop must be executed
+atleast once. When that loop terminates, clearly $x \leq y$. 
+Now, in the next iteration of the outer $\whilesym$ loop, we are computing
+$gcd(r, y)$ where $r \leq y$ and $x = r + q * y$. 
+By the induction hypothesis, this computes $gcd(r, y)$. We will now show that
+this is equal to $gcd(x, y)$.\\
+
+\begin{align*}
+& gcd(x, y) \setminus x \; \andsym \; gcd(x, y) \setminus y \\
+& \rightarrow gcd(x, y) \setminus r \; (\; \text{where } r = x - q * y \;) \\
+& \rightarrow gcd(x, y) \leq gcd(r, y) \\
+& \\
+& gcd(r, y) \setminus y \; \andsym \; gcd(r, y) \setminus r \\
+& \rightarrow gcd(r, y) \setminus x \; (\; \text{where } x = r + q * y \;)\\
+& \rightarrow gcd(r, y) \leq gcd(x, y) \\
+& \\
+& gcd(x, y) = gcd(r, y)
+\end{align*}
+
+Thus, by induction, the program computes the $gcd(x, y)$.\\
+
+\item \textbf{Values under the $\mathcal{I}$ and $\mathcal{T}$ semantics :}\\
+
+	By definition, 
+	$\mathcal{I} : \textbf{Com} \rightarrow (St \rightarrow St_{ \bot })$\\
+
+	$ \mathcal{I}(c) = [[ c ]] \cup  \{ (\sigma, \bot) \; | \; \sigma
+	\notin dom [[ c ]] \} $\\
+
+	By definition, 	
+	$\mathcal{T} : \textbf{Com} \rightarrow (St \rightarrow \{ \top, \bot \} )$\\
+
+	$ \mathcal{T}(c) = \{ ( \sigma, \top ) \; | \; \exists \; \sigma'.(\sigma,
+	\sigma') \in [[ c ]] \} \; \cup \; \{ ( \sigma, \bot) \; | \; \sigma \notin dom
+	[[ c ]] \} $\\
+	
+	\begin{itemize}
+	  
+	\item Using the definition of $[[\cdot]]$, we compute the value of the
+	program under the $\mathcal{I}$ semantics.
+	\begin{align*}	
+	& \mathcal{I}(P) = [[ P ]] \cup  \{ (\sigma, \bot) \; | \; \sigma
+	\notin dom [[ P ]] \} \\
+	& = (\; [[x \neq y]]_{\false} \; \circ \; ([[\C]] \; \circ \; [[x \neq
+	y]]_{\true} )^{*} ) \cup  \{ (\sigma, \bot) \; | \; \sigma	\notin dom [[ P ]]
+	\}\\
+	& = (\; [[x \neq y]]_{\false} \; \circ \; ( \; ( [[\C_2]] \circ [[\C_1]] ) \;
+	\circ \; [[x \neq y]]_{\true} )^{*} ) \; \cup  \{ (\sigma, \bot) \; | \; \sigma
+	\notin dom [[ P ]] \}\\
+	& = (\; [[x \neq y]]_{\false} \; \circ \; ( \; ( 
+	(\; [[y < x]]_{\false} \; \circ \; ([[x := x - y]] \; \circ \; [[y <
+	x]]_{\true} )^{*}) \\
+	& \; \circ 
+	(\; [[x < y]]_{\false} \; \circ \; ([[y := y - x]] \; \circ \; [[x <
+	y]]_{\true} )^{*} ) \; )\\
+	& \circ \; [[x \neq y]]_{\true} )^{*} ) \; \cup  \{ (\sigma, \bot) \; | \;
+	\sigma \notin dom [[ P ]] \} \\
+	& =	(\; [[x \neq y]]_{\false} \; \circ \; ( \; ( 
+	(\; [[y < x]]_{\false} \; \circ \; \\
+	& (\; \{ (\sigma, [\sigma \; | \; x : v]) \; |
+	\; (\sigma, v) \in | x - y | \; \& \; x \in dom(\sigma) \& \; y \in dom(\sigma)
+	\} \; \\
+	& \circ \; [[y < x]]_{\true} )^{*}) \circ (\; [[x < y]]_{\false} \; \circ \; \\
+	& (\; \{ (\sigma, [\sigma \; | \; y : v]) \; |
+	\; (\sigma, v) \in | y - x | \; \& \; x \in dom(\sigma) \& \; y \in dom(\sigma)
+	\} \; \\ 
+	& \circ \; [[x < y]]_{\true} )^{*} ) \; ) \circ \; [[x \neq y]]_{\true} )^{*}) \;
+	\end{align*}
+
+	This is the value of the program under the $\mathcal{I}$ semantics.
+	Intutively, we have expanded it using the $[[\cdot]]$ semantics to
+	show the input/output behavior that we can observe in the initial states, final
+	states, and non-termination.
+	We derive the last step from the fact that this program will terminate on any
+	two positive integers $x, y$, as we will show in the next part.
+
+	\item Using the definition of $[[\cdot]]$, we compute the value of the
+	program under the $\mathcal{T}$ semantics.
+	\begin{align*}	
+	& \mathcal{T}(P) = \{ ( \sigma, \top ) \; | \; \exists \; \sigma'.(\sigma,
+	\sigma') \in [[ P ]] \} \; \cup \; \{ ( \sigma, \bot) \; | \; \sigma \notin dom
+	[[ P ]] \} \\
+	\end{align*}
+
+	We already defined $[[ P ]]$ in the prior part.
+	Intuitively, the program does not terminate only if the initial state
+	$\sigma$ is not present in the domain of $[[P]]$.\\
+	
+	We will now show that :
+	\begin{align*}	
+	& \mathcal{T}(P) = \{ ( \sigma, \top ) \; | \; \exists \; \sigma'.(\sigma,
+	\sigma') \in [[ P ]] \} \\
+	\end{align*}
+	
+	To begin with, W.L.G let $ x \geq y > 0$. The program terminates
+	immediately if $x = y$. If $x > y$, then at the end of the loop iteration,
+	we will have $x = r$, where $x = q * y + r$.
+	Note that $r > 0$, since we require $y \geq x$ to break out of the loop.
+	Thus, $\forall \sigma \in \textbf{St}, \sigma \in dom[[ P ]]$. Hence,
+	the program will terminate on any two positive integers $x, y$.\\
+
+	\end{itemize}	
+	
+	
+
+\item \textbf{Values for altered program under the $\mathcal{I}$ and
+$\mathcal{T}$ semantics :}\\
+
+	\textbf{Yes}, the answers change when we consider the altered program.\\
+	
+	Consider for instance the pair of positive integers, $x = 4, y = 2$. 
+	In this altered program, the condition of the outer $\whilesym$ loop passes
+	initially and inside the loop, we execute the second inner $\whilesym$ loop twice.
+	We end up with $y = 2, x = 0$. In the second interation of the outer
+	$\whilesym$ loop, the condition again passes. However, now, the
+	first inner $\whilesym$ loop keeps getting executed forever, because
+	$y := y - 0$ does not reduce the value of $y$ and the loop condition
+	is valid forever.\\
+
+\begin{itemize}
+	  
+	\item Using the definition of $[[\cdot]]$, we compute the value of the
+	program under the $\mathcal{I}$ semantics.
+	\begin{align*}	
+	& \mathcal{I}(P) = [[ P ]] \cup  \{ (\sigma, \bot) \; | \; \sigma
+	\notin dom [[ P ]] \} \\
+	& = (\; [[x \neq y]]_{\false} \; \circ \; ([[\C]] \; \circ \; [[x \neq
+	y]]_{\true} )^{*} ) \cup  \{ (\sigma, \bot) \; | \; \sigma	\notin dom [[ P ]]
+	\}\\
+	& = (\; [[x \neq y]]_{\false} \; \circ \; ( \; ( [[\C_2]] \circ [[\C_1]] ) \;
+	\circ \; [[x \neq y]]_{\true} )^{*} ) \; \cup  \{ (\sigma, \bot) \; | \; \sigma
+	\notin dom [[ P ]] \}\\
+	& = (\; [[x \neq y]]_{\false} \; \circ \; ( \; ( 
+	(\; [[y \leq x]]_{\false} \; \circ \; ([[x := x - y]] \; \circ \; [[y \leq
+	x]]_{\true} )^{*}) \\
+	& \; \circ 
+	(\; [[x \leq y]]_{\false} \; \circ \; ([[y := y - x]] \; \circ \; [[x \leq
+	y]]_{\true} )^{*} ) \; )\\
+	& \circ \; [[x \neq y]]_{\true} )^{*} ) \; \cup  \{ (\sigma, \bot) \; | \;
+	\sigma \notin dom [[ P ]] \} \\
+	& =	(\; [[x \neq y]]_{\false} \; \circ \; ( \; ( 
+	(\; [[y \leq x]]_{\false} \; \circ \; \\
+	& (\; \{ (\sigma, [\sigma \; | \; x : v]) \; |
+	\; (\sigma, v) \in | x - y | \; \& \; x \in dom(\sigma) \& \; y \in dom(\sigma)
+	\} \; \\
+	& \circ \; [[y \leq x]]_{\true} )^{*}) \circ \\
+	& (\; [[x \leq y]]_{\false} \; \circ \; \\
+	& (\; \{ (\sigma, [\sigma \; | \; y : v]) \; |
+	\; (\sigma, v) \in | y - x | \; \& \; x \in dom(\sigma) \& \; y \in dom(\sigma)
+	\} \; \\ 
+	& \circ \; [[x \leq y]]_{\true} )^{*} ) \; ) \circ \; \\
+	& [[x \neq y]]_{\true} )^{*}) \; \cup  \{ (\sigma, \bot) \; | \; \sigma \notin
+	dom [[ P ]] \}
+	\end{align*}
+
+	This is the value of the altered program under the $\mathcal{I}$ semantics.
+	Intutively, we have expanded it using the $[[\cdot]]$ semantics to
+	show the input/output behavior that we can observe in the initial states, final
+	states, and non-termination.
+
+	\item Using the definition of $[[\cdot]]$, we compute the value of the
+	program under the $\mathcal{T}$ semantics.
+	\begin{align*}	
+	& \mathcal{T}(P) = \{ ( \sigma, \top ) \; | \; \exists \; \sigma'.(\sigma,
+	\sigma') \in [[ P ]] \} \; \cup \; \{ ( \sigma, \bot) \; | \; \sigma \notin dom
+	[[ P ]] \} \\
+	\end{align*}
+
+	We already defined $[[ P ]]$ in the prior part. Intuitively, the program
+	terminates only if $x = y$. Otherwise, it gets stuck in an infinite	loop.\\
+		
+	To begin with, W.L.G let $ x \geq y > 0$. The program terminates
+	immediately if $x = y$. If $x > y$, then at the end of the loop iteration,
+	we will have $x = r$, where $x = q * y + r$. Note that $r \geq 0$, since we
+	only require $y > x$ to break out of the loop. 
+	Thus, $\exists \sigma \in \textbf{St}, \sigma \notin dom[[ P ]]$.
+	Hence, the program will terminate only on any two positive integers $x, y$,
+	such that $x = y$. Otherwise, it will not terminate.
+	This is the value of the altered program under the $\mathcal{T}$ semantics.
+	
+	\end{itemize}		
+
+\end{itemize}
 
 \end{enumerate}
 
